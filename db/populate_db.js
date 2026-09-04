@@ -5,19 +5,44 @@ dotenv.config();
 
 const SQL = `
 -- create
-create table if not exists games (
+create table if not exists developers (
   id uuid default gen_random_uuid() primary key,
-  title text not null,
-  publishers text[],
-  developers text[],
-  description text,
-  platforms jsonb,
-  image text
+  name text not null unique
+);
+
+create table if not exists publishers (
+  id uuid default gen_random_uuid() primary key,
+  name text not null unique
 );
 
 create table if not exists genres (
   id uuid default gen_random_uuid() primary key,
   name text not null unique
+);
+
+create table if not exists game_engines (
+  id uuid default gen_random_uuid() primary key,
+  name text not null unique
+);
+
+create table if not exists games (
+  id uuid default gen_random_uuid() primary key,
+  title text not null,
+  description text,
+  platforms text[],
+  release_date date,
+  image_path text,
+  game_engine_id uuid,
+  constraint fk_game_engine foreign key (game_engine_id) references game_engines(id) on delete restrict
+);
+
+create table if not exists game_metrics (
+  id uuid default gen_random_uuid() primary key,
+  copies_sold int,
+  budget bigint,
+  revenue bigint,
+  game_id uuid unique,
+  constraint fk_game foreign key (game_id) references games(id) on delete cascade
 );
 
 create table if not exists games_genres (
@@ -28,33 +53,71 @@ create table if not exists games_genres (
   constraint fk_genre foreign key (genre_id) references genres(id) on delete restrict
 );
 
+create table if not exists games_developers (
+  game_id uuid not null,
+  developer_id uuid not null,
+  primary key (game_id, developer_id),
+  constraint fk_game foreign key (game_id) references games(id) on delete cascade,
+  constraint fk_developer foreign key (developer_id) references developers(id) on delete restrict
+);
+
+create table if not exists games_publishers (
+  game_id uuid not null,
+  publisher_id uuid not null,
+  primary key (game_id, publisher_id),
+  constraint fk_game foreign key (game_id) references games(id) on delete cascade,
+  constraint fk_publisher foreign key (publisher_id) references publishers(id) on delete restrict
+);
 
 -- insert
--- with inserted_game as (
---   insert into games values(default, 'test game', array['test'])
---   returning id as game_id
--- ),
--- inserted_genre as (
---   insert into genres values(default, 'test genre')
---   returning id as genre_id
--- )
--- insert into games_genres (game_id, genre_id)
--- select inserted_game.game_id, inserted_genre.genre_id
--- from inserted_game, inserted_genre;
--- 1. Insert the game normally
+insert into game_engines
+values(default, 'Unity');
 
-INSERT INTO games (title, publishers) 
-VALUES ('test game 2', ARRAY['test']);
+insert into games (title, description, platforms, release_date, image_path, game_engine_id) 
+values ('Disco Elysium', 'A CRPG in which, waking up in a hotel room a total amnesiac with highly opinionated voices in his head, a middle-aged detective on a murder case inadvertently ends up playing a part in the political dispute between a local labour union and a larger international body, all while struggling to piece together his past, diagnose the nature of the reality around him and come to terms with said reality.', array['Mac', 'PC'], ('2019-10-15'), '/uploads/images/disco elysium.jpg', (select id from game_engines where name='Unity'));
 
--- 2. Insert the genre normally
-INSERT INTO genres (name) 
-VALUES ('test genre 2');
+insert into publishers
+values (default, 'ZA/UM');
 
--- 3. Insert the connection by looking up the names
-INSERT INTO games_genres (game_id, genre_id)
-SELECT games.id, genres.id
-FROM games, genres
-WHERE games.title = 'test game 2' AND genres.name = 'test genre 2';
+insert into developers
+values (default, 'ZA/UM');
+
+insert into genres (name)
+values ('Adventure');
+
+insert into genres (name)
+values ('Role-playing (RPG)');
+
+insert into genres
+values (default, 'Turn-based strategy (TBS)');
+
+insert into games_genres (game_id, genre_id)
+select games.id, genres.id
+from games, genres
+where games.title = 'Disco Elysium' AND genres.name = 'Adventure';
+
+insert into games_genres (game_id, genre_id)
+select games.id, genres.id
+from games, genres
+where games.title = 'Disco Elysium' AND genres.name = 'Role-playing (RPG)';
+
+insert into games_genres (game_id, genre_id)
+select games.id, genres.id
+from games, genres
+where games.title = 'Disco Elysium' AND genres.name = 'Turn-based strategy (TBS)';
+
+insert into games_publishers (game_id, publisher_id)
+select games.id, publishers.id
+from games, publishers
+where games.title = 'Disco Elysium' AND publishers.name = 'ZA/UM';
+
+insert into games_developers (game_id, developer_id)
+select games.id, developers.id
+from games, developers
+where games.title = 'Disco Elysium' AND developers.name = 'ZA/UM';
+
+insert into game_metrics
+values (default, 4700000, 5000000, 205000000, (select id from games where title='Disco Elysium'));
 `;
 
 async function main() {
