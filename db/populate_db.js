@@ -1,3 +1,8 @@
+import dotenv from "dotenv";
+import { Client } from "pg";
+
+dotenv.config();
+
 const SQL = `
 -- create
 create table if not exists games (
@@ -37,6 +42,7 @@ create table if not exists games_genres (
 -- select inserted_game.game_id, inserted_genre.genre_id
 -- from inserted_game, inserted_genre;
 -- 1. Insert the game normally
+
 INSERT INTO games (title, publishers) 
 VALUES ('test game 2', ARRAY['test']);
 
@@ -49,9 +55,15 @@ INSERT INTO games_genres (game_id, genre_id)
 SELECT games.id, genres.id
 FROM games, genres
 WHERE games.title = 'test game 2' AND genres.name = 'test genre 2';
+`;
 
--- fetch 
-select * from games;
-select * from genres;
-select * from games_genres;
-`
+async function main() {
+  const client = new Client({
+    connectionString: `postgresql://${process.env.USER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.DB_PORT}/${process.env.DATABASE}`
+  });
+  await client.connect();
+  await client.query(SQL);
+  await client.end();
+}
+
+main();
