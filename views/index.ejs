@@ -1,81 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link href="css/form.css" rel="stylesheet" />
+    <title>Game Inventory</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link href="css/form.css" rel="stylesheet">
-  <title>Game Inventory</title>
-</head>
+  <body>
+    <div class="content">
+      <% if (locals.games) { %> <% for(let game of games) { %>
+      <div><%=game.title%></div>
 
-<body>
-  <div class="content">
-    <% if (locals.games) { %>
-      <% for(let game of games) { %>
-        <div>
-          <%=game.title%>
-        </div>
-
-        <div>
-          <% for(let publisher of game.publishers) { %>
-            <div>
-              <%=publisher.name%>
-            </div>
-            <%}%>
-        </div>
-
-        <div>
-          <% for(let developer of game.developers) { %>
-            <div>
-              <%=developer.name%>
-            </div>
-            <%}%>
-        </div>
-
-        <div>
-          <% for(let genre of game.genres) { %>
-            <div>
-              <%=genre.name%>
-            </div>
-            <%}%>
-        </div>
-
-        <div>
-          <%=game.gameEngine.name%>
-        </div>
-
-        <div>
-          <% for(let metrics of game.gameMetrics) { %>
-            <div>
-              <%=metrics.copies_sold%>
-            </div>
-            <div>
-              <%=metrics.budget%>
-            </div>
-            <div>
-              <%=metrics.revenue%>
-            </div>
-            <%}%>
-        </div>
-
-        <div>
-          <%=game.release_date%>
-        </div>
-
-
-        <div>
-          <% for(let platform of game.platforms) { %>
-            <div>
-              <%=platform%>
-            </div>
-            <%}%>
-        </div>
-
-        <img src="<%=game.image_path%>" alt="<%=game.title%> cover">
+      <div>
+        <% for(let publisher of game.publishers) { %>
+        <div><%=publisher.name%></div>
         <%}%>
-          <%}%>
-  </div>
-</body>
+      </div>
 
+      <div>
+        <% for(let developer of game.developers) { %>
+        <div><%=developer.name%></div>
+        <%}%>
+      </div>
+
+      <div>
+        <% for(let genre of game.genres) { %>
+        <div><%=genre.name%></div>
+        <%}%>
+      </div>
+
+      <div><%=game.gameEngine.name%></div>
+
+      <div>
+        <% for(let metrics of game.gameMetrics) { %>
+        <div><%=metrics.copies_sold%></div>
+        <div><%=metrics.budget%></div>
+        <div><%=metrics.revenue%></div>
+        <%}%>
+      </div>
+
+      <div><%=game.release_date%></div>
+
+      <div>
+        <% for(let platform of game.platforms) { %>
+        <div><%=platform%></div>
+        <%}%>
+      </div>
+
+      <img src="<%=game.image_path%>" alt="<%=game.title%> cover" />
+      <%}%> <%}%>
+    </div>
+  </body>
 </html>

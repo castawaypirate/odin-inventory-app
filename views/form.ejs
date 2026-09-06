@@ -1,96 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link href="css/form.css" rel="stylesheet" />
+    <title>Create/Update</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link href="css/form.css" rel="stylesheet">
-  <title>Create/Update</title>
-</head>
-
-<body>
-  <form method="POST" action="<%=action%>">
-    <%- include("partial/errors")%>
+  <body>
+    <form method="POST" action="<%=action%>" enctype="multipart/form-data">
+      <%- include("partial/errors")%>
       <div class="form-group">
         <label for="title">Title</label>
-        <input type="text" name="title" value="<%=isCreate ? '' : game.title %>">
+        <input
+          type="text"
+          name="title"
+          value="<%=locals.game === undefined ? '' : game.title %>"
+        />
       </div>
 
       <div class="form-group">
         <label for="description">Description</label>
-        <textarea rows="3"></textarea>
+        <!-- prettier-ignore -->
+        <textarea name="description" rows="3"><%= locals.game===undefined ? '' : game.description %></textarea>
       </div>
 
       <div class="form-group">
-        <!-- <label for="platforms">Platforms</label> -->
         <label>Platforms</label>
         <div class="platforms">
           <% for (const platform of platforms) { %>
-            <div>
-              <label for="platforms">
-                <%= platform%>
-              </label>
-              <input type="checkbox" name="platforms" value="<%= platform%>">
-            </div>
+          <div>
+            <label for="platforms"> <%= platform%> </label>
+            <input type="checkbox" name="platforms" value="<%= platform%>" 
+            <% if (locals.game && locals.game.platforms !== undefined)  {%>
+              <% if (game.platforms.includes(platform)) { %>
+                checked
+              <%}%>
             <%}%>
+            />
+          </div>
+          <%}%>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="release-date">Release date</label>
-        <!-- <input type="text" name="title" value="<%=isCreate ? '' : game.title %>"> -->
+        <label for="release_date">Release date</label>
+        <input
+          type="date"
+          name="release_date"
+          value="<%=locals.game === undefined ? '' : game['release_date'] %>"
+        />
       </div>
 
-
       <div class="form-group">
-        <label for="image">Cover</label>
-        <!-- <input type="text" name="title" value="<%=isCreate ? '' : game.title %>"> -->
+        <label for="game_cover">Cover</label>
+        <input type="file" name="game_cover">
       </div>
 
       <div class="form-group">
         <label for="genres">Genres</label>
-        <!-- <input type="text" name="title" value="<%=isCreate ? '' : game.title %>"> -->
       </div>
-
 
       <div class="form-group">
         <label for="publishers">Publishers</label>
-        <!-- <input type="text" name="title" value="<%=isCreate ? '' : game.title %>"> -->
       </div>
-
 
       <div class="form-group">
         <label for="developers">Developers</label>
-        <!-- <input type="text" name="title" value="<%=isCreate ? '' : game.title %>"> -->
       </div>
-
 
       <div class="form-group">
         <label for="game-engine">Game engine</label>
-        <!-- <input type="text" name="title" value="<%=isCreate ? '' : game.title %>"> -->
       </div>
-
 
       <div class="form-group">
         <label for="copies_sold">Copies sold</label>
-        <!-- <input type="text" name="title" value="<%=isCreate ? '' : game.title %>"> -->
       </div>
 
       <div class="form-group">
         <label for="budget">Budget</label>
-        <!-- <input type="text" name="title" value="<%=isCreate ? '' : game.title %>"> -->
       </div>
 
       <div class="form-group">
         <label for="revenue">Reveue</label>
-        <!-- <input type="text" name="title" value="<%=isCreate ? '' : game.title %>"> -->
       </div>
 
       <button type="submit">Create</button>
-
-  </form>
-
-</body>
-
+    </form>
+  </body>
 </html>
