@@ -4,6 +4,6 @@ export async function getGames() {
   return await db.getGames();
 }
 
-// export async function getGamesWithGenres() {
-//   return await db.getGamesWithGenres();
-// }
+export async function getGenres() {
+  return await db.getGenres();
+}

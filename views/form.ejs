@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link href="css/form.css" rel="stylesheet" />
+
+    <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js">
+    </script>
+    <script src="/js/form.js" defer></script>
     <title>Create/Update</title>
   </head>
 
@@ -32,18 +39,13 @@
           <% for (const platform of platforms) { %>
           <div>
             <label for="platforms"> <%= platform%> </label>
-            <input type="checkbox" name="platforms" value="<%= platform%>" 
-            <% if (locals.game && locals.game.platforms !== undefined)  {%>
-              <% if (game.platforms.includes(platform)) { %>
-                checked
-              <%}%>
-            <%}%>
-            />
+            <!-- prettier-ignore -->
+            <input type="checkbox" name="platforms" value="<%= platform%>" <%= (locals.game && locals.game.platforms !== undefined && game.platforms.includes(platform)) ? 'checked' : ''%>/>
           </div>
           <%}%>
         </div>
       </div>
-
+  
       <div class="form-group">
         <label for="release_date">Release date</label>
         <input
@@ -60,12 +62,45 @@
 
       <div class="form-group">
         <label for="genres">Genres</label>
+        <select id="genres" name="genres" multiple="multiple">
+          <% if (locals.game !== undefined) {%>
+            <% if (locals.game.genres !== undefined) {%>
+              <% if (Array.isArray(game.genres)) {%>
+                <% for (const genre of game.genres) { %>
+                  <option selected="selected">
+                    <%= genre %>
+                  </option>
+                <%}%>
+              <%} else {%>
+                <option selected="selected">
+                  <%= game.genres %>
+                </option>
+              <%}%>
+            <%}%>
+          <%}%>
+          <% if (locals.genres.length !== 0) {%>
+            <% if (locals.game.genres !== undefined) {%>
+              <% for (const genre of genres) { %>
+                <% if (!game.genres.includes(genre.name)) {%>
+                  <option>
+                    <%= genre.name %>
+                  </option>
+                <%}%>
+              <%}%>
+            <%} else {%>
+              <% for (const genre of genres) { %>
+                <option>
+                  <%= genre.name %>
+                </option>
+              <%}%>
+            <%}%>
+          <%}%>
+        </select>
       </div>
 
       <div class="form-group">
         <label for="publishers">Publishers</label>
       </div>
-
       <div class="form-group">
         <label for="developers">Developers</label>
       </div>

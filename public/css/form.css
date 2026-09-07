@@ -8,3 +8,7 @@ form {
   display: flex;
   flex-direction: row;
 }
+
+select {
+  width: 200px;
+}

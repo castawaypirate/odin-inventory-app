@@ -45,11 +45,12 @@ const validateMessage = [
     }
     return true;
   }),
+  body("genres").optional(),
 ];
 
 export async function getIndex(req, res) {
   const games = await gameModel.getGames();
-  if (!games) {
+  if (games.length === 0) {
     console.log("no games in the inventory, bruh");
   }
   res.render("index", { games: games });
@@ -57,7 +58,12 @@ export async function getIndex(req, res) {
 }
 
 export async function createForm(req, res) {
-  res.render("form", { action: "/create", platforms: platforms });
+  const genres = await gameModel.getGenres();
+  res.render("form", {
+    action: "/create",
+    platforms: platforms,
+    genres: genres,
+  });
 }
 
 export async function updateForm(req, res) {
@@ -68,21 +74,22 @@ export async function updateForm(req, res) {
 export const createGame = [
   validateMessage,
   async (req, res) => {
+    const genres = await gameModel.getGenres();
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // console.log(req.body);
       return res.status(400).render("form", {
         errors: errors.array(),
         action: "/create",
         platforms: platforms,
+        genres: genres,
         game: req.body,
       });
     }
     const game = matchedData(req);
     game.image_path = req.file.path;
 
-    // we will see what happens with the extension because multer removes it
-    console.log(game);
+    // we dont need extension we just use path
+    // console.log(game);
 
     return res.render("form", {
       action: "/create",
