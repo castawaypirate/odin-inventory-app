@@ -5,27 +5,29 @@ import { body, query, validationResult, matchedData } from "express-validator";
 const validateMessage = [
   body("title").trim().notEmpty().withMessage("Title cannot be empty"),
   body("description").trim().optional(),
-  body("platforms").custom((values) => {
-    if (!values) {
-      return true;
-    }
-    if (Array.isArray(values)) {
-      for (let value of values) {
-        if (!platforms.includes(value)) {
+  body("platforms")
+    .toArray()
+    .custom((values) => {
+      if (!values) {
+        return true;
+      }
+      if (Array.isArray(values)) {
+        for (let value of values) {
+          if (!platforms.includes(value)) {
+            throw new Error(
+              "Please select a valid platform from the checkbox list",
+            );
+          }
+        }
+      } else {
+        if (!platforms.includes(values)) {
           throw new Error(
             "Please select a valid platform from the checkbox list",
           );
         }
       }
-    } else {
-      if (!platforms.includes(values)) {
-        throw new Error(
-          "Please select a valid platform from the checkbox list",
-        );
-      }
-    }
-    return true;
-  }),
+      return true;
+    }),
   // 1. toArray() guarantees the incoming data becomes an array.
   // ('PC' becomes ['PC'], undefined becomes [])
   // body('platforms').toArray(),
@@ -45,7 +47,27 @@ const validateMessage = [
     }
     return true;
   }),
-  body("genres").optional(),
+  body("genres").optional().toArray(),
+  body("publishers").optional().toArray(),
+  body("developers").optional().toArray(),
+  body("game_engines").optional().toArray(),
+  body("copies_sold")
+    .trim()
+    .optional({ values: "falsy" })
+    .isNumeric()
+    .withMessage("Copies sold must be a number")
+    .isInt()
+    .withMessage("Copies sold must be an integer"),
+  body("budget")
+    .trim()
+    .optional({ values: "falsy" })
+    .isNumeric()
+    .withMessage("Budget must be a number"),
+  body("revenue")
+    .trim()
+    .optional({ values: "falsy" })
+    .isNumeric()
+    .withMessage("Revenue must be a number"),
 ];
 
 export async function getIndex(req, res) {
@@ -59,10 +81,16 @@ export async function getIndex(req, res) {
 
 export async function createForm(req, res) {
   const genres = await gameModel.getGenres();
+  const publishers = await gameModel.getPublishers();
+  const developers = await gameModel.getDevelopers();
+  const gameEngines = await gameModel.getGameEngines();
   res.render("form", {
     action: "/create",
     platforms: platforms,
     genres: genres,
+    publishers: publishers,
+    developers: developers,
+    game_engines: gameEngines,
   });
 }
 
@@ -75,26 +103,39 @@ export const createGame = [
   validateMessage,
   async (req, res) => {
     const genres = await gameModel.getGenres();
+    const publishers = await gameModel.getPublishers();
+    const developers = await gameModel.getDevelopers();
+    const gameEngines = await gameModel.getGameEngines();
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      // console.log(req.body);
       return res.status(400).render("form", {
         errors: errors.array(),
         action: "/create",
         platforms: platforms,
         genres: genres,
+        publishers: publishers,
+        developers: developers,
+        game_engines: gameEngines,
         game: req.body,
       });
     }
     const game = matchedData(req);
-    game.image_path = req.file.path;
+    if (req.file) {
+      game.image_path = req.file.path;
+    }
 
     // we dont need extension we just use path
-    // console.log(game);
+
+    const dbRes = await gameModel.insertGame(game);
 
     return res.render("form", {
       action: "/create",
       platforms: platforms,
-      game: req.body,
+      genres: genres,
+      publishers: publishers,
+      developers: developers,
+      game_engines: gameEngines,
     });
     // res.redirect("/");
   },

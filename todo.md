@@ -7,6 +7,9 @@
 - update game form
 - seed genres, publishers, developers, game engines (and make platforms like or enums)
 - cron job that deletes the files that are not in the database but they have been uploaded
+- research on how to do error handling to the different parts of the application or if there is a universal way to do it
+- use DELETE, PUT, PATCH methods
+
 
 * done
 - database schema
