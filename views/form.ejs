@@ -151,19 +151,18 @@
       </div>
 
       <div class="form-group">
-        <label for="game_engines">Game engine</label>
-        <select id="game_engines" name="game_engines" multiple="multiple">
-          <% if (locals.game?.game_engines !== undefined) {%>
-              <% for (const game_engine of game.game_engines) { %>
-                <option selected="selected">
-                  <%= game_engine %>
-                </option>
-              <%}%>
+        <label for="game_engine">Game engine</label>
+        <select id="game_engine" name="game_engine">
+          <option value="-1" selected>Select game engine</option>
+          <% if (locals.game?.game_engine !== undefined) {%>
+            <option selected="selected">
+              <%= game.game_engine %>
+            </option>
           <%}%>
           <% if (locals.game_engines?.length !== 0) {%>
-            <% if (locals.game?.game_engines !== undefined) {%>
+            <% if (locals.game?.game_engine !== undefined) {%>
               <% for (const game_engine of game_engines) { %>
-                <% if (!game.game_engines.includes(game_engine.name)) {%>
+                <% if (game.game_engine !== game_engine.name) {%>
                   <option>
                     <%= game_engine.name %>
                   </option>

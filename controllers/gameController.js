@@ -50,7 +50,14 @@ const validateMessage = [
   body("genres").optional().toArray(),
   body("publishers").optional().toArray(),
   body("developers").optional().toArray(),
-  body("game_engines").optional().toArray(),
+  body("game_engine")
+    .optional()
+    .customSanitizer((value) => {
+      if (value === "-1") {
+        return;
+      }
+      return value;
+    }),
   body("copies_sold")
     .trim()
     .optional({ values: "falsy" })
@@ -75,6 +82,7 @@ export async function getIndex(req, res) {
   if (games.length === 0) {
     console.log("no games in the inventory, bruh");
   }
+  console.log(games);
   res.render("index", { games: games });
   // res.render("index");
 }
@@ -122,8 +130,10 @@ export const createGame = [
     }
     const game = matchedData(req);
     if (req.file) {
-      game.image_path = req.file.path;
+      game.image_path = req.file.path.replace("public", "");
     }
+
+    // console.log(game);
 
     // we dont need extension we just use path
 

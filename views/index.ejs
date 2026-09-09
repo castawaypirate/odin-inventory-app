@@ -31,7 +31,7 @@
         <%}%>
       </div>
 
-      <div><%=game.gameEngine.name%></div>
+      <div><%=game.gameEngine?.name%></div>
 
       <div>
         <% for(let metrics of game.gameMetrics) { %>
@@ -49,9 +49,9 @@
         <%}%>
       </div>
 
+      <% if (game.image_path) {%> <% console.log(game.image_path) %>
       <img src="<%=game.image_path%>" alt="<%=game.title%> cover" />
-
-      <%}%> <%}%>
+      <% } %> <%}%> <%}%>
     </div>
   </body>
 </html>
