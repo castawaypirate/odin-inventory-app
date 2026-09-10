@@ -4,54 +4,45 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link href="css/form.css" rel="stylesheet" />
+    <link href="css/index.css" rel="stylesheet" />
     <title>Game Inventory</title>
   </head>
 
   <body>
     <div class="content">
-      <% if (locals.games) { %> <% for(let game of games) { %>
-      <div><%=game.title%></div>
-
-      <div>
-        <% for(let publisher of game.publishers) { %>
-        <div><%=publisher.name%></div>
-        <%}%>
+      <div class="card-grid">
+        <% if (locals.games) { %> <% for(let game of games) { %>
+        <div class="card">
+          <% if (game.image_path) {%> <% console.log(game.image_path) %>
+          <img src="<%=game.image_path%>" alt="<%=game.title%> cover" />
+          <% } else { %>
+          <img
+            src="/uploads/images/game cover placeholder.svg"
+            alt="an image of a gamepad serving as placeholder for games without uploaded cover"
+          />
+          <%}%>
+          <div class="card-details">
+            <h3><%=game.title%></h3>
+            <%if (game.publishers?.length !== 0) {%>
+            <div class="card-publishers">
+              <% for (let i=0;i<game.publishers.length;i++) { %>
+              <div class="publisher"><%=game.publishers[i].name%></div>
+                <% if (i!==game.publishers.length-1) {%>
+              <div class="divider">|</div>
+              <%}%>
+              <%}%>
+            </div>
+            <% } else {%>
+            <div>TBA</div>
+            <%}%> <%if (game.release_date) {%>
+            <div><%=new Date(game.release_date).getFullYear()%></div>
+            <%} else {%>
+            <div>----</div>
+            <% } %>
+          </div>
+        </div>
+        <%}%> <%}%>
       </div>
-
-      <div>
-        <% for(let developer of game.developers) { %>
-        <div><%=developer.name%></div>
-        <%}%>
-      </div>
-
-      <div>
-        <% for(let genre of game.genres) { %>
-        <div><%=genre.name%></div>
-        <%}%>
-      </div>
-
-      <div><%=game.gameEngine?.name%></div>
-
-      <div>
-        <% for(let metrics of game.gameMetrics) { %>
-        <div><%=metrics.copies_sold%></div>
-        <div><%=metrics.budget%></div>
-        <div><%=metrics.revenue%></div>
-        <%}%>
-      </div>
-
-      <div><%=game.release_date%></div>
-
-      <div>
-        <% for(let platform of game.platforms) { %>
-        <div><%=platform%></div>
-        <%}%>
-      </div>
-
-      <% if (game.image_path) {%> <% console.log(game.image_path) %>
-      <img src="<%=game.image_path%>" alt="<%=game.title%> cover" />
-      <% } %> <%}%> <%}%>
     </div>
   </body>
 </html>

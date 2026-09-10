@@ -1,0 +1,98 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&display=swap");
+
+:root {
+  --font-display: "Rajdhani", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  --bg-page: #09090b; /* Deep canvas (body) */
+  --bg-sidebar: #0e0f12; /* Distinct side navigation */
+  --bg-card: #18181b; /* Elevated card surface */
+  --bg-input: #141417; /* Search input & inactive pills */
+
+  --border-subtle: #27272a; /* Clean outlines for cards & inputs */
+
+  --text-primary: #f4f4f5; /* Titles and active selections */
+  --text-secondary: #a1a1aa; /* Developers, publishers, years */
+  --text-muted: #71717a; /* Inactive labels & placeholders */
+
+  /* --accent-rating: #facc15;*/
+  /* --accent-pill: #27272a;*/
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--bg-page);
+}
+
+.content {
+  margin: 1rem 0.5rem;
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  overflow-x: scroll;
+  white-space: nowrap;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-card);
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.card img {
+  width: 100%;
+  height: 333px;
+  object-fit: cover;
+  transition: all 0.2s transform ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  cursor: pointer;
+}
+
+.card-details {
+  padding: 5px;
+  min-width: 0;
+}
+
+.card-publishers {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  overflow-x: scroll;
+}
+
+.publisher {
+  white-space: nowrap;
+}
+
+.divider {
+  transform: scaleY(0.7);
+  margin: 0 2px;
+}

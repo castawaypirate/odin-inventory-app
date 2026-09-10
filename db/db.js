@@ -105,9 +105,6 @@ export async function insertGame(game) {
       queryText =
         "INSERT INTO games_genres (game_id, genre_id) SELECT * FROM UNNEST($1::UUID[], $2::UUID[])";
 
-      console.log(game.genre_ids);
-      console.log(gameIdArr);
-
       await client.query(queryText, [gameIdArr, game.genre_ids]);
     }
 
@@ -123,8 +120,6 @@ export async function insertGame(game) {
       queryText =
         "INSERT INTO games_publishers (game_id, publisher_id) SELECT $1, UNNEST($2::UUID[])";
 
-      console.log(game.publisher_ids);
-
       await client.query(queryText, [gameId[0].id, game.publisher_ids]);
     }
 
@@ -139,8 +134,6 @@ export async function insertGame(game) {
 
       queryText =
         "INSERT INTO games_developers (game_id, developer_id) SELECT $1, UNNEST($2::UUID[])";
-
-      console.log(game.developer_ids);
 
       await client.query(queryText, [gameId[0].id, game.developer_ids]);
     }

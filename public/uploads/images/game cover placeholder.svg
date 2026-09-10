@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 528 704" width="528" height="704">
+  <rect width="528" height="704" fill="#1e2124"/>
+  <!-- Gamepad Body -->
+  <path d="M184 280 C164 280 144 295 144 330 C144 360 169 385 194 380 L214 350 L314 350 L334 380 C359 385 384 360 384 330 C384 295 364 280 344 280 Z" fill="#2f3136"/>
+  <!-- D-pad (centered at x: 184, y: 325) -->
+  <path d="M169 320 h10 v-10 h10 v10 h10 v10 h-10 v10 h-10 v-10 h-10 z" fill="#72767d"/>
+  <!-- Action Buttons (cluster centered at x: 344, y: 325) -->
+  <circle cx="344" cy="310" r="5" fill="#72767d"/>
+  <circle cx="359" cy="325" r="5" fill="#72767d"/>
+  <circle cx="329" cy="325" r="5" fill="#72767d"/>
+  <circle cx="344" cy="340" r="5" fill="#72767d"/>
+  <!-- Label -->
+  <text x="264" y="420" fill="#72767d" font-family="sans-serif" font-size="16" font-weight="600" text-anchor="middle" letter-spacing="1">NO COVER ART</text>
+</svg>
