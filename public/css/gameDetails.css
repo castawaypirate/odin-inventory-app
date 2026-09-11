@@ -39,7 +39,8 @@ body {
   margin: 1rem 0.5rem;
 }
 
-h1 {
+h1,
+h3 {
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -47,69 +48,30 @@ h1 {
   white-space: nowrap;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  width: 50%;
-}
-
-.form-group {
+.game-details,
+.game-metrics {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-
-  input[type="text"],
-  input[type="date"] {
-    height: 28px;
-    padding: 0 5px;
-  }
 }
 
-.platforms {
+.divider {
+  transform: scaleY(0.7);
+  margin: 0 2px;
+}
+
+.game-publishers,
+.game-developers,
+.game-genres,
+.game-platforms {
   display: flex;
   flex-direction: row;
-  gap: 1rem;
-
-  input:hover {
-    cursor: pointer;
-  }
-}
-
-.select2-container--default .select2-dropdown {
-  color: var(--bg-input);
-}
-
-.select2-selection__choice {
-  color: var(--bg-input) !important;
-}
-
-button[type="submit"] {
-  background-color: transparent;
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 15px;
-  font-weight: 500;
-  padding: 8px 16px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  cursor: pointer;
-  width: 150px;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-button[type="submit"]:hover {
-  background-color: var(--bg-card-hover);
-  border-color: var(--text-muted);
-}
-
-button[type="submit"]:active {
-  background-color: var(--border-subtle);
+  align-items: center;
 }
 
 .links {
+  display: flex;
+  flex-direction: row;
   margin-top: 0.5rem;
 }
 

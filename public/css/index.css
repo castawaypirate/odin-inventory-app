@@ -39,6 +39,7 @@ body {
   margin: 1rem 0.5rem;
 }
 
+h1,
 h3 {
   font-family: var(--font-display);
   font-weight: 700;
@@ -59,6 +60,7 @@ h3 {
   background-color: var(--bg-card);
   width: 100%;
   min-width: 0;
+  max-width: 250px;
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
   overflow: hidden;

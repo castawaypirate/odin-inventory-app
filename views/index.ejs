@@ -4,16 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link href="css/index.css" rel="stylesheet" />
+    <link href="/css/index.css" rel="stylesheet" />
+    <script src="/js/index.js" defer></script>
     <title>Game Inventory</title>
   </head>
 
   <body>
     <div class="content">
+      <div style="margin: 1rem 0;">
+        <a href="/create">Create Game</a>
+      </div>
       <div class="card-grid">
-        <% if (locals.games) { %> <% for(let game of games) { %>
-        <div class="card">
-          <% if (game.image_path) {%> <% console.log(game.image_path) %>
+        <% if (locals.games?.length > 0) { %> <% for(let game of games) { %>
+        <div class="card" data-id="<%=game.id%>">
+          <% if (game.image_path) {%>
           <img src="<%=game.image_path%>" alt="<%=game.title%> cover" />
           <% } else { %>
           <img
@@ -41,7 +45,9 @@
             <% } %>
           </div>
         </div>
-        <%}%> <%}%>
+        <%}%> <%} else {%>
+        <h1>No games currently in the inventory</h1>
+        <% } %>
       </div>
     </div>
   </body>

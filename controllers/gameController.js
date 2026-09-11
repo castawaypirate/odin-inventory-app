@@ -1,8 +1,17 @@
 import * as gameModel from "../models/gameModel.js";
 import { platforms } from "../constants/platforms.js";
-import { body, query, validationResult, matchedData } from "express-validator";
+import {
+  body,
+  query,
+  param,
+  validationResult,
+  matchedData,
+} from "express-validator";
+import { format } from "date-fns";
 
-const validateMessage = [
+const validateParams = [param("gameId").isUUID()];
+
+const validateGame = [
   body("title").trim().notEmpty().withMessage("Title cannot be empty"),
   body("description").trim().optional(),
   body("platforms")
@@ -28,6 +37,8 @@ const validateMessage = [
       }
       return true;
     }),
+
+  body("release_date").optional().isISO8601(),
   // 1. toArray() guarantees the incoming data becomes an array.
   // ('PC' becomes ['PC'], undefined becomes [])
   // body('platforms').toArray(),
@@ -82,10 +93,32 @@ export async function getIndex(req, res) {
   if (games.length === 0) {
     console.log("no games in the inventory, bruh");
   }
-  console.log(games);
   res.render("index", { games: games });
-  // res.render("index");
 }
+
+export const getGameDetails = [
+  validateParams,
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).render("gameDetails", {
+        error: 400,
+      });
+    }
+    const gameId = matchedData(req);
+    const game = await gameModel.getGameById(gameId.gameId);
+
+    if (!game) {
+      return res.status(404).render("gameDetails", {
+        error: 404,
+      });
+    }
+
+    game.release_date = new Date(game.release_date).toDateString();
+    game.gameMetrics = game.gameMetrics[0];
+    res.render("gameDetails", { game: game });
+  },
+];
 
 export async function createForm(req, res) {
   const genres = await gameModel.getGenres();
@@ -99,16 +132,12 @@ export async function createForm(req, res) {
     publishers: publishers,
     developers: developers,
     game_engines: gameEngines,
+    format: format,
   });
 }
 
-export async function updateForm(req, res) {
-  const game = { title: "test" };
-  res.render("form", { action: `/update/${game.id}`, game: game });
-}
-
 export const createGame = [
-  validateMessage,
+  validateGame,
   async (req, res) => {
     const genres = await gameModel.getGenres();
     const publishers = await gameModel.getPublishers();
@@ -116,7 +145,6 @@ export const createGame = [
     const gameEngines = await gameModel.getGameEngines();
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // console.log(req.body);
       return res.status(400).render("form", {
         errors: errors.array(),
         action: "/create",
@@ -126,6 +154,7 @@ export const createGame = [
         developers: developers,
         game_engines: gameEngines,
         game: req.body,
+        format: format,
       });
     }
     const game = matchedData(req);
@@ -133,35 +162,152 @@ export const createGame = [
       game.image_path = req.file.path.replace("public", "");
     }
 
-    // console.log(game);
-
-    // we dont need extension we just use path
-
     const dbRes = await gameModel.insertGame(game);
 
-    return res.render("form", {
-      action: "/create",
+    res.redirect("/");
+  },
+];
+
+export const updateForm = [
+  validateParams,
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).render("form", {
+        error: 400,
+      });
+    }
+    const gameId = matchedData(req);
+    const game = await gameModel.getGameById(gameId.gameId);
+
+    if (!game) {
+      return res.status(404).render("form", {
+        error: 404,
+      });
+    }
+
+    if (game.genres.length > 0) game.genres = game.genres.map((g) => g.name);
+    if (game.publishers.length > 0)
+      game.publishers = game.publishers.map((g) => g.name);
+    if (game.developers.length > 0)
+      game.developers = game.developers.map((g) => g.name);
+    if (game.gameEngine) game.game_engine = game.gameEngine.name;
+
+    game.copies_sold = game.gameMetrics[0].copies_sold;
+    game.budget = game.gameMetrics[0].budget;
+    game.revenue = game.gameMetrics[0].revenue;
+
+    const genres = await gameModel.getGenres();
+    const publishers = await gameModel.getPublishers();
+    const developers = await gameModel.getDevelopers();
+    const gameEngines = await gameModel.getGameEngines();
+
+    res.render("form", {
+      action: `/update/${game.id}`,
       platforms: platforms,
       genres: genres,
       publishers: publishers,
       developers: developers,
       game_engines: gameEngines,
+      game: game,
+      format: format,
     });
-    // res.redirect("/");
   },
 ];
 
+// export async function updateForm(req, res) {
+//   const { gameId } = req.params;
+//   const game = await gameModel.getGameById(gameId);
+//
+//   if (!game) {
+//     return res.status(404).render("form", {
+//       error: 404,
+//     });
+//   }
+//
+//   if (game.genres.length > 0) game.genres = game.genres.map((g) => g.name);
+//   if (game.publishers.length > 0)
+//     game.publishers = game.publishers.map((g) => g.name);
+//   if (game.developers.length > 0)
+//     game.developers = game.developers.map((g) => g.name);
+//   if (game.gameEngine) game.game_engine = game.gameEngine.name;
+//
+//   game.copies_sold = game.gameMetrics[0].copies_sold;
+//   game.budget = game.gameMetrics[0].budget;
+//   game.revenue = game.gameMetrics[0].revenue;
+//
+//   const genres = await gameModel.getGenres();
+//   const publishers = await gameModel.getPublishers();
+//   const developers = await gameModel.getDevelopers();
+//   const gameEngines = await gameModel.getGameEngines();
+//
+//   //   const errors = validationResult(req);
+//   // if (!errors.isEmpty()) {
+//   //   // console.log(req.body);
+//   //   return res.status(400).render("form", {
+//   //     errors: errors.array(),
+//   //     action: "/update",
+//   //     platforms: platforms,
+//   //     genres: genres,
+//   //     publishers: publishers,
+//   //     developers: developers,
+//   //     game_engines: gameEngines,
+//   //     game: req.body,
+//   //     format: format,
+//   //   });
+//   // }
+//
+//   res.render("form", {
+//     action: `/update/${game.id}`,
+//     platforms: platforms,
+//     genres: genres,
+//     publishers: publishers,
+//     developers: developers,
+//     game_engines: gameEngines,
+//     game: game,
+//     format: format,
+//   });
+// }
+
 export const updateGame = [
-  validateMessage,
+  validateGame,
   async (req, res) => {
+    const genres = await gameModel.getGenres();
+    const publishers = await gameModel.getPublishers();
+    const developers = await gameModel.getDevelopers();
+    const gameEngines = await gameModel.getGameEngines();
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .render("form", { errors: errors.array(), platforms: platforms });
+      console.log(req.body);
+      return res.status(400).render("form", {
+        errors: errors.array(),
+        platforms: platforms,
+        genres: genres,
+        publishers: publishers,
+        developers: developers,
+        game_engines: gameEngines,
+        game: req.body,
+        format: format,
+      });
     }
-    // const {title, description, platform } = matchedData(req);
     const game = matchedData(req);
+    if (req.file) {
+      game.image_path = req.file.path.replace("public", "");
+    }
     console.log(game);
+
+    // const dbRes = await gameModel.insertGame(game);
+
+    return res.render("form", {
+      action: "/update",
+      platforms: platforms,
+      genres: genres,
+      publishers: publishers,
+      developers: developers,
+      game_engines: gameEngines,
+      format: format,
+    });
+
+    // res.redirect("/update/gameid");
   },
 ];

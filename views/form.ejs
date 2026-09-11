@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link href="css/form.css" rel="stylesheet" />
+    <link href="/css/form.css" rel="stylesheet" />
 
     <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
 
@@ -12,201 +12,236 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js">
     </script>
     <script src="/js/form.js" defer></script>
-    <title>Create/Update</title>
+    <title>
+      <%if (locals.action?.includes("create")) { %>
+        Create
+      <%} else {%>
+        Update
+      <%}%>
+    </title>
   </head>
 
   <body>
-    <form method="POST" action="<%=action%>" enctype="multipart/form-data">
-      <%- include("partial/errors")%>
-      <div class="form-group">
-        <label for="title">Title</label>
-        <input
-          type="text"
-          name="title"
-          value="<%=locals.game === undefined ? '' : game.title %>"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="description">Description</label>
-        <!-- prettier-ignore -->
-        <textarea name="description" rows="3"><%= locals.game===undefined ? '' : game.description %></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Platforms</label>
-        <div class="platforms">
-          <% for (const platform of platforms) { %>
-          <div>
-            <label for="platforms"> <%= platform%> </label>
-            <!-- prettier-ignore -->
-            <input type="checkbox" name="platforms" value="<%= platform%>" <%= (locals.game && locals.game.platforms !== undefined && game.platforms.includes(platform)) ? 'checked' : ''%>/>
-          </div>
-          <%}%>
+    <div class="content">
+      <% if (locals.error === 400) {%>
+        <h1>Bad request</h1>
+        <a href="/">Back to inventory</a>
+      <%} else if (locals.error == 404) {%>
+        <h1>Game not found</h1>
+        <a href="/">Back to inventory</a>
+      <%} else {%>
+      <form method="POST" action="<%=action%>" enctype="multipart/form-data">
+        <%if (locals.action?.includes("create")) { %>
+        <h1>Create Game</h1>
+        <%} else {%>
+        <h1>Update Game</h1>
+        <%}%>
+        <%- include("partial/errors")%>
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input
+            type="text"
+            name="title"
+            value="<%=locals.game === undefined ? '' : game.title %>"
+          />
         </div>
-      </div>
-  
-      <div class="form-group">
-        <label for="release_date">Release date</label>
-        <input
-          type="date"
-          name="release_date"
-          value="<%=locals.game === undefined ? '' : game['release_date'] %>"
-        />
-      </div>
 
-      <div class="form-group">
-        <label for="game_cover">Cover</label>
-        <input type="file" name="game_cover">
-      </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <!-- prettier-ignore -->
+          <textarea name="description" rows="5"><%= locals.game===undefined ? '' : game.description %></textarea>
+        </div>
 
-      <div class="form-group">
-        <label for="genres">Genres</label>
-        <select id="genres" name="genres" multiple="multiple">
-          <% if (locals.game?.genres !== undefined) {%>
-            <% for (const genre of game.genres) { %>
-              <option selected="selected">
-                <%= genre %>
-              </option>
+        <div class="form-group">
+          <label>Platforms</label>
+          <div class="platforms">
+            <% for (const platform of platforms) { %>
+            <div>
+              <label for="platforms"> <%= platform%> </label>
+              <!-- prettier-ignore -->
+              <input type="checkbox" name="platforms" value="<%= platform%>" <%= (locals.game && locals.game.platforms !== undefined && game.platforms.includes(platform)) ? 'checked' : ''%>/>
+            </div>
             <%}%>
-          <%}%>
-          <% if (locals.genres?.length !== 0) {%>
+          </div>
+        </div>
+    
+        <div class="form-group">
+          <label for="release_date">Release date</label>
+          <input
+            type="date"
+            name="release_date"
+            value="<%=locals.game === undefined ? '' : format(new Date(game['release_date']), 'yyyy-MM-dd') %>"
+          />
+        </div>
+
+        <div class="form-group cover_input">
+          <label for="game_cover">Cover</label>
+            <% if (locals.game?.image_path) { %>
+              <div class="cover_message">A game cover has already been uploaded. If you want remove it press <span class="remove">here</span>!</div>
+            <%} else {%>
+              <input type="file" name="game_cover">
+            <%}%>
+        </div>
+
+        <div class="form-group">
+          <label for="genres">Genres</label>
+          <select id="genres" name="genres" multiple="multiple">
             <% if (locals.game?.genres !== undefined) {%>
-              <% for (const genre of genres) { %>
-                <% if (!game.genres.includes(genre.name)) {%>
+              <% for (const genre of game.genres) { %>
+                <option selected="selected">
+                  <%= genre %>
+                </option>
+              <%}%>
+            <%}%>
+            <% if (locals.genres?.length !== 0) {%>
+              <% if (locals.game?.genres !== undefined) {%>
+                <% for (const genre of genres) { %>
+                  <% if (!game.genres.includes(genre.name)) {%>
+                    <option>
+                      <%= genre.name %>
+                    </option>
+                  <%}%>
+                <%}%>
+              <%} else {%>
+                <% for (const genre of genres) { %>
                   <option>
                     <%= genre.name %>
                   </option>
                 <%}%>
               <%}%>
-            <%} else {%>
-              <% for (const genre of genres) { %>
-                <option>
-                  <%= genre.name %>
+            <%}%>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="publishers">Publishers</label>
+          <select id="publishers" name="publishers" multiple="multiple">
+            <% if (locals.game?.publishers !== undefined) {%>
+              <% for (const publisher of game.publishers) { %>
+                <option selected="selected">
+                  <%= publisher %>
                 </option>
               <%}%>
             <%}%>
-          <%}%>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="publishers">Publishers</label>
-        <select id="publishers" name="publishers" multiple="multiple">
-          <% if (locals.game?.publishers !== undefined) {%>
-            <% for (const publisher of game.publishers) { %>
-              <option selected="selected">
-                <%= publisher %>
-              </option>
-            <%}%>
-          <%}%>
-          <% if (locals.publishers?.length !== 0) {%>
-            <% if (locals.game?.publishers !== undefined) {%>
-              <% for (const publisher of publishers) { %>
-                <% if (!game.publishers.includes(publisher.name)) {%>
+            <% if (locals.publishers?.length !== 0) {%>
+              <% if (locals.game?.publishers !== undefined) {%>
+                <% for (const publisher of publishers) { %>
+                  <% if (!game.publishers.includes(publisher.name)) {%>
+                    <option>
+                      <%= publisher.name %>
+                    </option>
+                  <%}%>
+                <%}%>
+              <%} else {%>
+                <% for (const publisher of publishers) { %>
                   <option>
                     <%= publisher.name %>
                   </option>
                 <%}%>
               <%}%>
-            <%} else {%>
-              <% for (const publisher of publishers) { %>
-                <option>
-                  <%= publisher.name %>
-                </option>
-              <%}%>
             <%}%>
-          <%}%>
-        </select>
-      </div>
+          </select>
+        </div>
 
-      <div class="form-group">
-        <label for="developers">Developers</label>
-        <select id="developers" name="developers" multiple="multiple">
-          <% if (locals.game?.developers !== undefined) {%>
-              <% for (const developer of game.developers) { %>
-                <option selected="selected">
-                  <%= developer %>
-                </option>
-              <%}%>
-          <%}%>
-          <% if (locals.developers?.length !== 0) {%>
+        <div class="form-group">
+          <label for="developers">Developers</label>
+          <select id="developers" name="developers" multiple="multiple">
             <% if (locals.game?.developers !== undefined) {%>
-              <% for (const developer of developers) { %>
-                <% if (!game.developers.includes(developer.name)) {%>
+                <% for (const developer of game.developers) { %>
+                  <option selected="selected">
+                    <%= developer %>
+                  </option>
+                <%}%>
+            <%}%>
+            <% if (locals.developers?.length !== 0) {%>
+              <% if (locals.game?.developers !== undefined) {%>
+                <% for (const developer of developers) { %>
+                  <% if (!game.developers.includes(developer.name)) {%>
+                    <option>
+                      <%= developer.name %>
+                    </option>
+                  <%}%>
+                <%}%>
+              <%} else {%>
+                <% for (const developer of developers) { %>
                   <option>
                     <%= developer.name %>
                   </option>
                 <%}%>
               <%}%>
-            <%} else {%>
-              <% for (const developer of developers) { %>
-                <option>
-                  <%= developer.name %>
-                </option>
-              <%}%>
             <%}%>
-          <%}%>
-        </select>
-      </div>
+          </select>
+        </div>
 
-      <div class="form-group">
-        <label for="game_engine">Game engine</label>
-        <select id="game_engine" name="game_engine">
-          <option value="-1" selected>Select game engine</option>
-          <% if (locals.game?.game_engine !== undefined) {%>
-            <option selected="selected">
-              <%= game.game_engine %>
-            </option>
-          <%}%>
-          <% if (locals.game_engines?.length !== 0) {%>
+        <div class="form-group">
+          <label for="game_engine">Game engine</label>
+          <select id="game_engine" name="game_engine">
+            <option value="-1" selected>Select game engine</option>
             <% if (locals.game?.game_engine !== undefined) {%>
-              <% for (const game_engine of game_engines) { %>
-                <% if (game.game_engine !== game_engine.name) {%>
+              <option selected="selected">
+                <%= game.game_engine %>
+              </option>
+            <%}%>
+            <% if (locals.game_engines?.length !== 0) {%>
+              <% if (locals.game?.game_engine !== undefined) {%>
+                <% for (const game_engine of game_engines) { %>
+                  <% if (game.game_engine !== game_engine.name) {%>
+                    <option>
+                      <%= game_engine.name %>
+                    </option>
+                  <%}%>
+                <%}%>
+              <%} else {%>
+                <% for (const game_engine of game_engines) { %>
                   <option>
                     <%= game_engine.name %>
                   </option>
                 <%}%>
               <%}%>
-            <%} else {%>
-              <% for (const game_engine of game_engines) { %>
-                <option>
-                  <%= game_engine.name %>
-                </option>
-              <%}%>
             <%}%>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="copies_sold">Copies sold</label>
+          <input
+            type="text"
+            name="copies_sold"
+            value="<%=locals.game === undefined ? '' : game.copies_sold %>"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="budget">Budget</label>
+          <input
+            type="text"
+            name="budget"
+            value="<%=locals.game === undefined ? '' : game.budget %>"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="revenue">Reveue</label>
+          <input
+            type="text"
+            name="revenue"
+            value="<%=locals.game === undefined ? '' : game.revenue %>"
+          />
+        </div>
+
+        <button type="submit">
+          <%if (action.includes("create")) { %>
+            Create
+          <%} else {%>
+            Update
           <%}%>
-        </select>
-      </div>
+        </button>
 
-      <div class="form-group">
-        <label for="copies_sold">Copies sold</label>
-        <input
-          type="text"
-          name="copies_sold"
-          value="<%=locals.game === undefined ? '' : game.copies_sold %>"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="budget">Budget</label>
-        <input
-          type="text"
-          name="budget"
-          value="<%=locals.game === undefined ? '' : game.budget %>"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="revenue">Reveue</label>
-        <input
-          type="text"
-          name="revenue"
-          value="<%=locals.game === undefined ? '' : game.revenue %>"
-        />
-      </div>
-
-      <button type="submit">Create</button>
-    </form>
+        <div class="links">
+          <a href="/">Back to inventory</a> 
+        </div>
+      </form>
+      <%}%>
+    </div>
   </body>
 </html>

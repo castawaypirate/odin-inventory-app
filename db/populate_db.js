@@ -74,7 +74,7 @@ insert into game_engines
 values(default, 'Unity');
 
 insert into games (title, description, platforms, release_date, image_path, game_engine_id) 
-values ('Disco Elysium', 'A CRPG in which, waking up in a hotel room a total amnesiac with highly opinionated voices in his head, a middle-aged detective on a murder case inadvertently ends up playing a part in the political dispute between a local labour union and a larger international body, all while struggling to piece together his past, diagnose the nature of the reality around him and come to terms with said reality.', array['Mac', 'PC'], ('2019-10-15'), '/uploads/images/disco elysium.jpg', (select id from game_engines where name='Unity'));
+values ('Disco Elysium', 'A CRPG in which, waking up in a hotel room a total amnesiac with highly opinionated voices in his head, a middle-aged detective on a murder case inadvertently ends up playing a part in the political dispute between a local labour union and a larger international body, all while struggling to piece together his past, diagnose the nature of the reality around him and come to terms with said reality.', array['macOS', 'Windows'], ('2019-10-15'), '/uploads/images/disco elysium.jpg', (select id from game_engines where name='Unity'));
 
 insert into publishers
 values (default, 'ZA/UM');
@@ -122,7 +122,7 @@ values (default, 4700000, 5000000, 205000000, (select id from games where title=
 
 async function main() {
   const client = new Client({
-    connectionString: `postgresql://${process.env.USER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.DB_PORT}/${process.env.DATABASE}`
+    connectionString: `postgresql://${process.env.USER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.DB_PORT}/${process.env.DATABASE}`,
   });
   await client.connect();
   await client.query(SQL);

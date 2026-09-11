@@ -1,4 +1,5 @@
 import express from "express";
+import methodOverride from "method-override";
 import path from "path";
 import { fileURLToPath } from "url";
 import favicon from "serve-favicon";
@@ -17,6 +18,8 @@ app.use(express.static(assetsPath));
 
 app.use(express.urlencoded({ extended: true }));
 
+app.use(methodOverride("_method"));
+
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
@@ -24,7 +27,7 @@ app.use("/", indexRouter);
 
 app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).send(err.message);
-})
+});
 
 app.listen(port, (error) => {
   if (error) {
@@ -32,4 +35,4 @@ app.listen(port, (error) => {
   }
   console.log(`Running on Node version: ${process.version}`);
   console.log(`App listening at port: ${port}`);
-})
+});

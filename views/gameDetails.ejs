@@ -1,41 +1,155 @@
-<div><%=game.title%></div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link href="/css/gameDetails.css" rel="stylesheet" />
+    <!-- <script src="js/gameDetails.js" defer></script> -->
+    <title>Game Details</title>
+  </head>
 
-<div>
-  <% for(let publisher of game.publishers) { %>
-  <div><%=publisher.name%></div>
-  <%}%>
-</div>
+  <body>
+    <div class="content">
+      <% if (locals.game) {%> <% if (game.image_path) {%>
+      <img src="<%=game.image_path%>" alt="<%=game.title%> cover" />
+      <% } else { %>
+      <img
+        src="/uploads/images/game cover placeholder.svg"
+        alt="an image of a gamepad serving as placeholder for games without uploaded cover"
+      />
+      <%}%>
+      <div class="game-details">
+        <h1><%=game.title%></h1>
 
-<div>
-  <% for(let developer of game.developers) { %>
-  <div><%=developer.name%></div>
-  <%}%>
-</div>
+        <p><%=game.description%></p>
 
-<div>
-  <% for(let genre of game.genres) { %>
-  <div><%=genre.name%></div>
-  <%}%>
-</div>
+        <div>
+          <h3>Release date</h3>
+          <div><%=game.release_date%></div>
+        </div>
 
-<div><%=game.gameEngine?.name%></div>
+        <div>
+          <h3>Publishers</h3>
+            <%if (game.publishers?.length !== 0) {%>
+            <div class="game-publishers">
+              <% for (let i=0;i<game.publishers.length;i++) { %>
+              <div class="publisher"><%=game.publishers[i].name%></div>
+                <% if (i!==game.publishers.length-1) {%>
+              <div class="divider">|</div>
+              <%}%>
+              <%}%>
+            </div>
+            <% } else {%>
+            <div>TBA</div>
+            <%}%>
+        </div>
 
-<div>
-  <% for(let metrics of game.gameMetrics) { %>
-  <div><%=metrics.copies_sold%></div>
-  <div><%=metrics.budget%></div>
-  <div><%=metrics.revenue%></div>
-  <%}%>
-</div>
+        <div>
+          <h3>Developers</h3>
+            <%if (game.developers?.length !== 0) {%>
+            <div class="game-developers">
+              <% for (let i=0;i<game.developers.length;i++) { %>
+              <div class="developers"><%=game.developers[i].name%></div>
+                <% if (i!==game.developers.length-1) {%>
+              <div class="divider">|</div>
+              <%}%>
+              <%}%>
+            </div>
+            <% } else {%>
+            <div>TBA</div>
+            <%}%>
+        </div>
 
-<div><%=game.release_date%></div>
+        <div>
+          <h3>Genres</h3>
+            <%if (game.genres?.length !== 0) {%>
+            <div class="game-genres">
+              <% for (let i=0;i<game.genres.length;i++) { %>
+              <div class="genres"><%=game.genres[i].name%></div>
+                <% if (i!==game.genres.length-1) {%>
+              <div class="divider">|</div>
+              <%}%>
+              <%}%>
+            </div>
+            <% } else {%>
+            <div>Uncategorized</div>
+            <%}%>
+        </div>
 
-<div>
-  <% for(let platform of game.platforms) { %>
-  <div><%=platform%></div>
-  <%}%>
-</div>
+        <div>
+          <h3>Platforms</h3>
+            <%if (game.platforms?.length !== 0) {%>
+            <div class="game-platforms">
+              <% for (let i=0;i<game.platforms.length;i++) { %>
+              <div class="platform"><%=game.platforms[i]%></div>
+                <% if (i!==game.platforms.length-1) {%>
+                <div class="divider">|</div>
+                <%}%>
+              <%}%>
+            </div>
+            <% } else {%>
+            <div>Not Specified</div>
+            <%}%>
+        </div>
 
-<% if (game.image_path) {%> <% console.log(game.image_path) %>
-<img src="<%=game.image_path%>" alt="<%=game.title%> cover" />
-<% } %>
+        <div>
+          <h3>Game Engine</h3>
+          
+          <%if (game.gameEngine) {%>
+          <div class="game-engine"><%=game.gameEngine?.name%></div>
+          <%} else {%>
+          <div>
+            Unknown
+          </div>
+          <%}%>
+        </div>
+        <div class="game-metrics">
+          <div>
+            <h3>Copies sold</h3>  
+            <%if (game.gameMetrics.copies_sold !== null) {%>
+            <div><%=game.gameMetrics.copies_sold%></div>
+            <%} else {%>
+            <div>
+              Data Unavailable
+            </div>
+            <%}%>
+          </div>
+          <div>
+            <h3>Budget</h3>
+            <%if (game.gameMetrics.budget !== null) {%>
+            <div><%=game.gameMetrics.budget%></div>
+            <%} else {%>
+            <div>
+              Undisclosed
+            </div>
+            <%}%>
+          </div>
+          <div>
+            <h3>Revenue</h3>
+            <%if (game.gameMetrics.revenue !== null) {%>
+            <div><%=game.gameMetrics.revenue%></div>
+            <%} else {%>
+            <div>
+              Undisclosed
+            </div>
+            <%}%>
+          </div>
+        </div>
+
+      </div>
+      <div class="links">
+       <a href="/update/<%=game.id%>">Edit</a> 
+       <div class="divider">|</div>
+       <a href="/">Back to inventory</a> 
+      </div>
+    </div>
+    <% } else if (locals.error === 400) {%>
+    <h1>Bad request</h1>
+    <a href="/">Back to inventory</a> 
+    <% } else {%>
+    <h1>Game not found</h1>
+    <a href="/">Back to inventory</a> 
+    <% } %>
+  </body>
+</html>

@@ -4,6 +4,10 @@ export async function getGames() {
   return await db.getGames();
 }
 
+export async function getGameById(gameId) {
+  return await db.getGameById(gameId);
+}
+
 export async function getGenres() {
   return await db.getGenres();
 }
