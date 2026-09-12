@@ -30,18 +30,18 @@
             <%if (game.publishers?.length !== 0) {%>
             <div class="card-publishers">
               <% for (let i=0;i<game.publishers.length;i++) { %>
-              <div class="publisher"><%=game.publishers[i].name%></div>
+              <div class="publisher secondary"><%=game.publishers[i].name%></div>
                 <% if (i!==game.publishers.length-1) {%>
               <div class="divider">|</div>
               <%}%>
               <%}%>
             </div>
             <% } else {%>
-            <div>TBA</div>
+            <div class="missing">TBA</div>
             <%}%> <%if (game.release_date) {%>
-            <div><%=new Date(game.release_date).getFullYear()%></div>
+            <div class="secondary"><%=new Date(game.release_date).getFullYear()%></div>
             <%} else {%>
-            <div>----</div>
+            <div class="missing">----</div>
             <% } %>
           </div>
         </div>

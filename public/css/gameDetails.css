@@ -12,7 +12,7 @@
   --border-subtle: #27272a; /* Clean outlines for cards & inputs */
 
   --text-primary: #f4f4f5; /* Titles and active selections */
-  --text-secondary: #a1a1aa; /* Developers, publishers, years */
+  --text-secondary: #d4d4d8; /* Lightened from #a1a1aa for better reading contrast */
   --text-muted: #71717a; /* Inactive labels & placeholders */
 
   /* --accent-rating: #facc15;*/
@@ -82,4 +82,12 @@ a {
 
 a:hover {
   font-weight: bold;
+}
+
+.secondary {
+  color: var(--text-secondary);
+}
+
+.missing {
+  color: var(--text-muted);
 }

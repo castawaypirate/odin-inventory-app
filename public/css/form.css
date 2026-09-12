@@ -12,7 +12,7 @@
   --border-subtle: #27272a; /* Clean outlines for cards & inputs */
 
   --text-primary: #f4f4f5; /* Titles and active selections */
-  --text-secondary: #a1a1aa; /* Developers, publishers, years */
+  --text-secondary: #d4d4d8; /* Lightened from #a1a1aa for better reading contrast */
   --text-muted: #71717a; /* Inactive labels & placeholders */
 
   /* --accent-rating: #facc15;*/
@@ -37,6 +37,16 @@ body {
 
 .content {
   margin: 1rem 0.5rem;
+}
+
+.errors {
+  list-style-type: none;
+  width: fit-content;
+
+  li {
+    border: 1px solid var(--text-primary);
+    padding: 0 2px;
+  }
 }
 
 h1 {
@@ -74,6 +84,11 @@ form {
   input:hover {
     cursor: pointer;
   }
+}
+
+.remove:hover {
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .select2-container--default .select2-dropdown {

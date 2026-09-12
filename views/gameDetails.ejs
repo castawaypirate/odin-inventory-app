@@ -22,17 +22,21 @@
       <div class="game-details">
         <h1><%=game.title%></h1>
 
-        <p><%=game.description%></p>
+        <p class="secondary"><%=game.description%></p>
 
         <div>
           <h3>Release date</h3>
-          <div><%=game.release_date%></div>
+          <% if (game.release_date) { %>
+          <div class="secondary"><%=game.release_date%></div>
+          <%} else {%>
+          <div class="missing">----</div>
+          <%}%>
         </div>
 
         <div>
           <h3>Publishers</h3>
             <%if (game.publishers?.length !== 0) {%>
-            <div class="game-publishers">
+            <div class="game-publishers secondary">
               <% for (let i=0;i<game.publishers.length;i++) { %>
               <div class="publisher"><%=game.publishers[i].name%></div>
                 <% if (i!==game.publishers.length-1) {%>
@@ -41,14 +45,14 @@
               <%}%>
             </div>
             <% } else {%>
-            <div>TBA</div>
+            <div class="missing">TBA</div>
             <%}%>
         </div>
 
         <div>
           <h3>Developers</h3>
             <%if (game.developers?.length !== 0) {%>
-            <div class="game-developers">
+            <div class="game-developers secondary">
               <% for (let i=0;i<game.developers.length;i++) { %>
               <div class="developers"><%=game.developers[i].name%></div>
                 <% if (i!==game.developers.length-1) {%>
@@ -57,14 +61,14 @@
               <%}%>
             </div>
             <% } else {%>
-            <div>TBA</div>
+            <div class="missing">TBA</div>
             <%}%>
         </div>
 
         <div>
           <h3>Genres</h3>
             <%if (game.genres?.length !== 0) {%>
-            <div class="game-genres">
+            <div class="game-genres secondary">
               <% for (let i=0;i<game.genres.length;i++) { %>
               <div class="genres"><%=game.genres[i].name%></div>
                 <% if (i!==game.genres.length-1) {%>
@@ -73,14 +77,14 @@
               <%}%>
             </div>
             <% } else {%>
-            <div>Uncategorized</div>
+            <div class="missing">Uncategorized</div>
             <%}%>
         </div>
 
         <div>
           <h3>Platforms</h3>
             <%if (game.platforms?.length !== 0) {%>
-            <div class="game-platforms">
+            <div class="game-platforms secondary">
               <% for (let i=0;i<game.platforms.length;i++) { %>
               <div class="platform"><%=game.platforms[i]%></div>
                 <% if (i!==game.platforms.length-1) {%>
@@ -89,7 +93,7 @@
               <%}%>
             </div>
             <% } else {%>
-            <div>Not Specified</div>
+            <div class="missing">Not Specified</div>
             <%}%>
         </div>
 
@@ -97,9 +101,9 @@
           <h3>Game Engine</h3>
           
           <%if (game.gameEngine) {%>
-          <div class="game-engine"><%=game.gameEngine?.name%></div>
+          <div class="game-engine secondary"><%=game.gameEngine?.name%></div>
           <%} else {%>
-          <div>
+          <div class="missing">
             Unknown
           </div>
           <%}%>
@@ -108,9 +112,9 @@
           <div>
             <h3>Copies sold</h3>  
             <%if (game.gameMetrics.copies_sold !== null) {%>
-            <div><%=game.gameMetrics.copies_sold%></div>
+            <div class="secondary"><%=game.gameMetrics.copies_sold%></div>
             <%} else {%>
-            <div>
+            <div class="missing">
               Data Unavailable
             </div>
             <%}%>
@@ -118,9 +122,9 @@
           <div>
             <h3>Budget</h3>
             <%if (game.gameMetrics.budget !== null) {%>
-            <div><%=game.gameMetrics.budget%></div>
+            <div class="secondary"><%=game.gameMetrics.budget%></div>
             <%} else {%>
-            <div>
+            <div class="missing">
               Undisclosed
             </div>
             <%}%>
@@ -128,9 +132,9 @@
           <div>
             <h3>Revenue</h3>
             <%if (game.gameMetrics.revenue !== null) {%>
-            <div><%=game.gameMetrics.revenue%></div>
+            <div class="secondary"><%=game.gameMetrics.revenue%></div>
             <%} else {%>
-            <div>
+            <div class="missing">
               Undisclosed
             </div>
             <%}%>

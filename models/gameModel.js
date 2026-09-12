@@ -27,3 +27,7 @@ export async function getGameEngines() {
 export async function insertGame(game) {
   return await db.insertGame(game);
 }
+
+export async function updateGame(gameId, game) {
+  return await db.updateGame(gameId, game);
+}

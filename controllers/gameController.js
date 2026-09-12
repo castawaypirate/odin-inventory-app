@@ -6,6 +6,7 @@ import {
   param,
   validationResult,
   matchedData,
+  check,
 } from "express-validator";
 import { format } from "date-fns";
 
@@ -38,7 +39,7 @@ const validateGame = [
       return true;
     }),
 
-  body("release_date").optional().isISO8601(),
+  body("release_date").optional({ values: "falsy" }).isISO8601(),
   // 1. toArray() guarantees the incoming data becomes an array.
   // ('PC' becomes ['PC'], undefined becomes [])
   // body('platforms').toArray(),
@@ -114,7 +115,9 @@ export const getGameDetails = [
       });
     }
 
-    game.release_date = new Date(game.release_date).toDateString();
+    if (game.release_date) {
+      game.release_date = new Date(game.release_date).toDateString();
+    }
     game.gameMetrics = game.gameMetrics[0];
     res.render("gameDetails", { game: game });
   },
@@ -201,9 +204,8 @@ export const updateForm = [
     const publishers = await gameModel.getPublishers();
     const developers = await gameModel.getDevelopers();
     const gameEngines = await gameModel.getGameEngines();
-
     res.render("form", {
-      action: `/update/${game.id}`,
+      action: `/update/${game.id}?_method=PUT`,
       platforms: platforms,
       genres: genres,
       publishers: publishers,
@@ -215,72 +217,19 @@ export const updateForm = [
   },
 ];
 
-// export async function updateForm(req, res) {
-//   const { gameId } = req.params;
-//   const game = await gameModel.getGameById(gameId);
-//
-//   if (!game) {
-//     return res.status(404).render("form", {
-//       error: 404,
-//     });
-//   }
-//
-//   if (game.genres.length > 0) game.genres = game.genres.map((g) => g.name);
-//   if (game.publishers.length > 0)
-//     game.publishers = game.publishers.map((g) => g.name);
-//   if (game.developers.length > 0)
-//     game.developers = game.developers.map((g) => g.name);
-//   if (game.gameEngine) game.game_engine = game.gameEngine.name;
-//
-//   game.copies_sold = game.gameMetrics[0].copies_sold;
-//   game.budget = game.gameMetrics[0].budget;
-//   game.revenue = game.gameMetrics[0].revenue;
-//
-//   const genres = await gameModel.getGenres();
-//   const publishers = await gameModel.getPublishers();
-//   const developers = await gameModel.getDevelopers();
-//   const gameEngines = await gameModel.getGameEngines();
-//
-//   //   const errors = validationResult(req);
-//   // if (!errors.isEmpty()) {
-//   //   // console.log(req.body);
-//   //   return res.status(400).render("form", {
-//   //     errors: errors.array(),
-//   //     action: "/update",
-//   //     platforms: platforms,
-//   //     genres: genres,
-//   //     publishers: publishers,
-//   //     developers: developers,
-//   //     game_engines: gameEngines,
-//   //     game: req.body,
-//   //     format: format,
-//   //   });
-//   // }
-//
-//   res.render("form", {
-//     action: `/update/${game.id}`,
-//     platforms: platforms,
-//     genres: genres,
-//     publishers: publishers,
-//     developers: developers,
-//     game_engines: gameEngines,
-//     game: game,
-//     format: format,
-//   });
-// }
-
 export const updateGame = [
   validateGame,
   async (req, res) => {
+    const gameId = req.params.gameId;
     const genres = await gameModel.getGenres();
     const publishers = await gameModel.getPublishers();
     const developers = await gameModel.getDevelopers();
     const gameEngines = await gameModel.getGameEngines();
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log(req.body);
       return res.status(400).render("form", {
         errors: errors.array(),
+        action: `/update/${gameId}?_method=PUT`,
         platforms: platforms,
         genres: genres,
         publishers: publishers,
@@ -290,21 +239,26 @@ export const updateGame = [
         format: format,
       });
     }
+
     const game = matchedData(req);
+    if (game.game_cover !== "filled") {
+      game.image_path = null;
+    }
     if (req.file) {
       game.image_path = req.file.path.replace("public", "");
     }
-    console.log(game);
 
-    // const dbRes = await gameModel.insertGame(game);
+    const dbRes = await gameModel.updateGame(gameId, game);
 
+    req.body.image_path = "it's something";
     return res.render("form", {
-      action: "/update",
+      action: `/update/${gameId}?_method=PUT`,
       platforms: platforms,
       genres: genres,
       publishers: publishers,
       developers: developers,
       game_engines: gameEngines,
+      game: req.body,
       format: format,
     });
 

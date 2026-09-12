@@ -22,6 +22,6 @@ indexRouter.get("/update/:gameId", updateForm);
 
 indexRouter.post("/create", upload.single("game_cover"), createGame);
 
-indexRouter.post("/update/:gameId", upload.single("game_cover"), updateGame);
+indexRouter.put("/update/:gameId", upload.single("game_cover"), updateGame);
 
 export default indexRouter;

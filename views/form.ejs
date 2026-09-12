@@ -70,14 +70,16 @@
           <input
             type="date"
             name="release_date"
-            value="<%=locals.game === undefined ? '' : format(new Date(game['release_date']), 'yyyy-MM-dd') %>"
+            value="<%=locals.game?.release_date ? format(new Date(game['release_date']), 'yyyy-MM-dd') : '' %>"
           />
         </div>
 
         <div class="form-group cover_input">
           <label for="game_cover">Cover</label>
             <% if (locals.game?.image_path) { %>
-              <div class="cover_message">A game cover has already been uploaded. If you want remove it press <span class="remove">here</span>!</div>
+              <div class="cover_message">A game cover has already been uploaded. If you want remove it press <span class="remove">here</span>!
+              <input style="display: none;" type="text" name="game_cover" value="filled">
+              </div>
             <%} else {%>
               <input type="file" name="game_cover">
             <%}%>
