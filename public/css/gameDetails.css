@@ -39,6 +39,91 @@ body {
   margin: 1rem 0.5rem;
 }
 
+.modal {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  position: relative;
+  background-color: var(--bg-card);
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  border-radius: 4px;
+  width: 300px;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modal-errors {
+    list-style-type: none;
+    width: fit-content;
+
+    li {
+      border: 1px solid var(--text-primary);
+      padding: 0 2px;
+    }
+  }
+
+  button[type="submit"] {
+    background-color: transparent;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100px;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  button[type="submit"]:hover {
+    background-color: var(--bg-card-hover);
+    border-color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  button[type="submit"]:active {
+    background-color: var(--border-subtle);
+  }
+
+  .close {
+    position: absolute;
+    top: 6px;
+    right: 10px; /* Safely pins it to the top-right corner regardless of screen size */
+    color: var(--text-muted);
+    font-size: 20px; /* Slightly larger for the &times; symbol */
+    line-height: 1;
+    font-weight: bold;
+    transition: color 0.15s ease-in-out; /* Smooth, premium feel */
+  }
+
+  .close:hover,
+  .close:focus {
+    color: var(
+      --text-primary
+    ); /* Pops to bright white to show it is clickable */
+    text-decoration: none;
+    cursor: pointer;
+  }
+}
+
 h1,
 h3 {
   font-family: var(--font-display);

@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link href="/css/gameDetails.css" rel="stylesheet" />
-    <!-- <script src="js/gameDetails.js" defer></script> -->
+    <script src="/js/gameDetails.js" defer></script>
     <title>Game Details</title>
   </head>
 
   <body>
     <div class="content">
+      <%- include("partial/deleteModal")%>
       <% if (locals.game) {%> <% if (game.image_path) {%>
       <img src="<%=game.image_path%>" alt="<%=game.title%> cover" />
       <% } else { %>
@@ -111,7 +112,7 @@
         <div class="game-metrics">
           <div>
             <h3>Copies sold</h3>  
-            <%if (game.gameMetrics.copies_sold !== null) {%>
+            <%if (game.gameMetrics?.copies_sold) {%>
             <div class="secondary"><%=game.gameMetrics.copies_sold%></div>
             <%} else {%>
             <div class="missing">
@@ -121,7 +122,7 @@
           </div>
           <div>
             <h3>Budget</h3>
-            <%if (game.gameMetrics.budget !== null) {%>
+            <%if (game.gameMetrics?.budget) {%>
             <div class="secondary"><%=game.gameMetrics.budget%></div>
             <%} else {%>
             <div class="missing">
@@ -131,7 +132,7 @@
           </div>
           <div>
             <h3>Revenue</h3>
-            <%if (game.gameMetrics.revenue !== null) {%>
+            <%if (game.gameMetrics?.revenue) {%>
             <div class="secondary"><%=game.gameMetrics.revenue%></div>
             <%} else {%>
             <div class="missing">
@@ -144,6 +145,8 @@
       </div>
       <div class="links">
        <a href="/update/<%=game.id%>">Edit</a> 
+       <div class="divider">|</div>
+       <a href="/game/<%=game.id%>/delete">Delete</a> 
        <div class="divider">|</div>
        <a href="/">Back to inventory</a> 
       </div>

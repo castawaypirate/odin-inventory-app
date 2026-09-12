@@ -286,13 +286,13 @@ export async function updateGame(gameId, game) {
     }
 
     queryText =
-      "UPDATE game_metrics SET (copies_sold, budget, revenue) = ($2, $3, $4) WHERE game_id = $1;";
+      "INSERT INTO game_metrics (copies_sold, budget, revenue, game_id) VALUES ($1, $2, $3, $4) ON CONFLICT (game_id) DO UPDATE SET copies_sold = EXCLUDED.copies_sold, budget = EXCLUDED.budget, revenue = EXCLUDED.revenue";
 
     await client.query(queryText, [
-      gameId,
       game.copies_sold,
       game.budget,
       game.revenue,
+      gameId,
     ]);
 
     await client.query("COMMIT");
@@ -302,4 +302,10 @@ export async function updateGame(gameId, game) {
   } finally {
     client.release();
   }
+}
+
+export async function deleteGameById(gameId) {
+  let queryText = "DELETE FROM games WHERE id = $1";
+
+  await pool.query(queryText, [gameId]);
 }

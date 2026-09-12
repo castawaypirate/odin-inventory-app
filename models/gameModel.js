@@ -31,3 +31,7 @@ export async function insertGame(game) {
 export async function updateGame(gameId, game) {
   return await db.updateGame(gameId, game);
 }
+
+export async function deleteGameById(gameId) {
+  return await db.deleteGameById(gameId);
+}

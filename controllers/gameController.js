@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import * as gameModel from "../models/gameModel.js";
 import { platforms } from "../constants/platforms.js";
 import {
@@ -8,7 +9,6 @@ import {
   matchedData,
   check,
 } from "express-validator";
-import { format } from "date-fns";
 
 const validateParams = [param("gameId").isUUID()];
 
@@ -118,8 +118,11 @@ export const getGameDetails = [
     if (game.release_date) {
       game.release_date = new Date(game.release_date).toDateString();
     }
+
+    let deleteModal = req.params.action === "delete" ? true : false;
+
     game.gameMetrics = game.gameMetrics[0];
-    res.render("gameDetails", { game: game });
+    res.render("gameDetails", { game: game, deleteModal: deleteModal });
   },
 ];
 
@@ -196,9 +199,9 @@ export const updateForm = [
       game.developers = game.developers.map((g) => g.name);
     if (game.gameEngine) game.game_engine = game.gameEngine.name;
 
-    game.copies_sold = game.gameMetrics[0].copies_sold;
-    game.budget = game.gameMetrics[0].budget;
-    game.revenue = game.gameMetrics[0].revenue;
+    game.copies_sold = game.gameMetrics[0]?.copies_sold;
+    game.budget = game.gameMetrics[0]?.budget;
+    game.revenue = game.gameMetrics[0]?.revenue;
 
     const genres = await gameModel.getGenres();
     const publishers = await gameModel.getPublishers();
@@ -250,18 +253,38 @@ export const updateGame = [
 
     const dbRes = await gameModel.updateGame(gameId, game);
 
-    req.body.image_path = "it's something";
-    return res.render("form", {
-      action: `/update/${gameId}?_method=PUT`,
-      platforms: platforms,
-      genres: genres,
-      publishers: publishers,
-      developers: developers,
-      game_engines: gameEngines,
-      game: req.body,
-      format: format,
-    });
+    res.redirect(`/game/${gameId}`);
+  },
+];
 
-    // res.redirect("/update/gameid");
+export const removeGame = [
+  validateParams,
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).render("gameDetails", {
+        error: 400,
+      });
+    }
+    const gameId = matchedData(req);
+    const game = await gameModel.getGameById(gameId.gameId);
+
+    if (!game) {
+      return res.status(404).render("gameDetails", {
+        error: 404,
+      });
+    }
+
+    if (req.body.password === process.env.SECRET) {
+      await gameModel.deleteGameById(game.id);
+    } else {
+      return res.render("gameDetails", {
+        game: game,
+        deleteModal: true,
+        modalErrors: [{ msg: "Wrong password" }],
+      });
+    }
+
+    res.redirect("/");
   },
 ];

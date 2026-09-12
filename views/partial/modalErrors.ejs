@@ -1,0 +1,7 @@
+<% if (locals.modalErrors) {%>
+<ul class="modal-errors">
+  <% for(let error of modalErrors) {%>
+  <li><%=error.msg%></li>
+  <%}%>
+</ul>
+<%}%>
