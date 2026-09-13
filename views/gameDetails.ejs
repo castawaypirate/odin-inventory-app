@@ -11,7 +11,7 @@
 
   <body>
     <div class="content">
-      <%- include("partial/deleteModal")%>
+      <%- include("partial/confirmModal")%>
       <% if (locals.game) {%> <% if (game.image_path) {%>
       <img src="<%=game.image_path%>" alt="<%=game.title%> cover" />
       <% } else { %>
@@ -144,7 +144,7 @@
 
       </div>
       <div class="links">
-       <a href="/update/<%=game.id%>">Edit</a> 
+       <a href="/game/<%=game.id%>/update">Edit</a> 
        <div class="divider">|</div>
        <a href="/game/<%=game.id%>/delete">Delete</a> 
        <div class="divider">|</div>

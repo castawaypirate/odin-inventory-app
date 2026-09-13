@@ -1,9 +1,13 @@
 * what we will finish by the end of the day
-- delete game entry + cron job  ~ 12/9/2026 ~
+- delete game entry (with express-session) + update/create password confirmation for both navigating to the view and doing the pull request ~ 12/9/2026 ~
+- delete game entry with password confirmation ~ 12/9/2026 ~
 - update and create forms + styles (almost - something with game_metrics isn't working properly) ~ 11/9/2026 ~
 
 * what we learned today
 - ~ 12/9/2026 ~:
+    - to create a pop up either you re-render the whole page along with the modal or you do it with client side javascript
+    - to do the password confirmation you either create a form and and a route for the first way or you create a route and you hit it from the client side for the second way
+    - to create a modal you have position: fixed; top: 0; left: 0; z-index: 1; width: 100%; height: 100%; and you change the background this takes the whole page and then on top you create the actual modal (modal-content)
 - ~ 11/9/2026 ~:
     - many middlewares in same route (didn't use it though)
     - you can upsert or update

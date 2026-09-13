@@ -119,10 +119,28 @@ export const getGameDetails = [
       game.release_date = new Date(game.release_date).toDateString();
     }
 
-    let deleteModal = req.params.action === "delete" ? true : false;
+    let confirmModal = false;
+    let action = "";
+    let method = "";
+    if (req.params.action === "update") {
+      confirmModal = true;
+      action = `/update/${game.id}`;
+      method = "GET";
+    }
+
+    if (req.params.action === "delete") {
+      confirmModal = true;
+      action = `/game/${game.id}?_method=DELETE`;
+      method = "POST";
+    }
 
     game.gameMetrics = game.gameMetrics[0];
-    res.render("gameDetails", { game: game, deleteModal: deleteModal });
+    res.render("gameDetails", {
+      game: game,
+      showConfirmModal: confirmModal,
+      action: action,
+      method: method,
+    });
   },
 ];
 
@@ -174,8 +192,41 @@ export const createGame = [
   },
 ];
 
+async function test(req, res, next) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).render("gameDetails", {
+      error: 400,
+    });
+  }
+  const gameId = matchedData(req);
+  const game = await gameModel.getGameById(gameId.gameId);
+
+  if (!game) {
+    return res.status(404).render("gameDetails", {
+      error: 404,
+    });
+  }
+  console.log(req);
+
+  if (req.body.password === process.env.SECRET) {
+    next();
+  } else {
+    return res.render("gameDetails", {
+      game: game,
+      showConfirmModal: true,
+      action: `/update/${game.id}`,
+      method: "GET",
+      modalErrors: [{ msg: "Wrong password" }],
+    });
+  }
+
+  res.redirect("/");
+}
+
 export const updateForm = [
   validateParams,
+  test,
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -280,7 +331,9 @@ export const removeGame = [
     } else {
       return res.render("gameDetails", {
         game: game,
-        deleteModal: true,
+        showConfirmModal: true,
+        action: `/game/${game.id}?_method=DELETE`,
+        method: "POST",
         modalErrors: [{ msg: "Wrong password" }],
       });
     }

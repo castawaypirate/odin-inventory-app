@@ -1,9 +1,9 @@
-<% if (locals.deleteModal) {%>
+<% if (locals.showConfirmModal) {%>
 <div class="modal">
   <div class="modal-content">
     <%- include("modalErrors")%>
     <span class="close">&times;</span>
-    <form method="POST" action="/game/<%=locals.game.id%>?_method=DELETE">
+    <form method="<%=method%>" action="<%=action%>">
       <label for="password">Password</label>
       <input type="password" name="password" value="" />
       <button type="submit">Confirm</button>
