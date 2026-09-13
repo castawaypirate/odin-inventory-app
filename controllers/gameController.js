@@ -122,13 +122,18 @@ export const getGameDetails = [
     let confirmModal = false;
     let action = "";
     let method = "";
+    let modalErrors = null;
     if (req.params.action === "update") {
+      modalErrors = req.session.modalErrors;
+      req.session.modalErrors = null;
       confirmModal = true;
       action = `/game/${game.id}/verify`;
       method = "POST";
     }
 
     if (req.params.action === "delete") {
+      modalErrors = req.session.modalErrors;
+      req.session.modalErrors = null;
       confirmModal = true;
       action = `/game/${game.id}?_method=DELETE`;
       method = "POST";
@@ -140,6 +145,7 @@ export const getGameDetails = [
       showConfirmModal: confirmModal,
       action: action,
       method: method,
+      modalErrors: modalErrors,
     });
   },
 ];
@@ -196,6 +202,7 @@ const verifyPassword = function (req, res, next) {
   if (req.body.password === process.env.SECRET) {
     req.verified = true;
   } else {
+    req.session.modalErrors = [{ msg: "Wrong password" }];
     req.verified = false;
   }
   next();
@@ -220,17 +227,17 @@ export const verifyPasswordUpdate = [
       });
     }
 
-    if (req.verified) {
-      res.redirect(`/update/${game.id}`);
-    } else {
-      return res.render("gameDetails", {
-        game: game,
-        showConfirmModal: true,
-        action: `/game/${game.id}/verify`,
-        method: "POST",
-        modalErrors: [{ msg: "Wrong password" }],
-      });
+    if (!req.verified) {
+      return res.redirect(`/game/${game.id}/update`);
+      // return res.render("gameDetails", {
+      //   game: game,
+      //   showConfirmModal: true,
+      //   action: `/game/${game.id}/verify`,
+      //   method: "POST",
+      //   modalErrors: [{ msg: "Wrong password" }],
+      // });
     }
+    res.redirect(`/update/${game.id}`);
   },
 ];
 
@@ -336,18 +343,18 @@ export const removeGame = [
       });
     }
 
-    if (req.verified) {
-      await gameModel.deleteGameById(game.id);
-    } else {
-      return res.render("gameDetails", {
-        game: game,
-        showConfirmModal: true,
-        action: `/game/${game.id}?_method=DELETE`,
-        method: "POST",
-        modalErrors: [{ msg: "Wrong password" }],
-      });
+    if (!req.verified) {
+      return res.redirect(`/game/${game.id}/delete`);
+      // return res.render("gameDetails", {
+      //   game: game,
+      //   showConfirmModal: true,
+      //   action: `/game/${game.id}?_method=DELETE`,
+      //   method: "POST",
+      //   modalErrors: [{ msg: "Wrong password" }],
+      // });
     }
 
+    await gameModel.deleteGameById(game.id);
     res.redirect("/");
   },
 ];
