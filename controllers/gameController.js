@@ -124,8 +124,8 @@ export const getGameDetails = [
     let method = "";
     if (req.params.action === "update") {
       confirmModal = true;
-      action = `/update/${game.id}`;
-      method = "GET";
+      action = `/game/${game.id}/verify`;
+      method = "POST";
     }
 
     if (req.params.action === "delete") {
@@ -192,41 +192,50 @@ export const createGame = [
   },
 ];
 
-async function test(req, res, next) {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).render("gameDetails", {
-      error: 400,
-    });
-  }
-  const gameId = matchedData(req);
-  const game = await gameModel.getGameById(gameId.gameId);
-
-  if (!game) {
-    return res.status(404).render("gameDetails", {
-      error: 404,
-    });
-  }
-  console.log(req);
-
+const verifyPassword = function (req, res, next) {
   if (req.body.password === process.env.SECRET) {
-    next();
+    req.verified = true;
   } else {
-    return res.render("gameDetails", {
-      game: game,
-      showConfirmModal: true,
-      action: `/update/${game.id}`,
-      method: "GET",
-      modalErrors: [{ msg: "Wrong password" }],
-    });
+    req.verified = false;
   }
+  next();
+};
 
-  res.redirect("/");
-}
+export const verifyPasswordUpdate = [
+  verifyPassword,
+  validateParams,
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).render("gameDetails", {
+        error: 400,
+      });
+    }
+    const gameId = matchedData(req);
+    const game = await gameModel.getGameById(gameId.gameId);
+
+    if (!game) {
+      return res.status(404).render("gameDetails", {
+        error: 404,
+      });
+    }
+
+    if (req.verified) {
+      res.redirect(`/update/${game.id}`);
+    } else {
+      return res.render("gameDetails", {
+        game: game,
+        showConfirmModal: true,
+        action: `/game/${game.id}/verify`,
+        method: "POST",
+        modalErrors: [{ msg: "Wrong password" }],
+      });
+    }
+  },
+];
 
 export const updateForm = [
   validateParams,
-  test,
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -309,6 +318,7 @@ export const updateGame = [
 ];
 
 export const removeGame = [
+  verifyPassword,
   validateParams,
   async (req, res) => {
     const errors = validationResult(req);
@@ -326,7 +336,7 @@ export const removeGame = [
       });
     }
 
-    if (req.body.password === process.env.SECRET) {
+    if (req.verified) {
       await gameModel.deleteGameById(game.id);
     } else {
       return res.render("gameDetails", {

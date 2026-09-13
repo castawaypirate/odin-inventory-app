@@ -8,6 +8,7 @@ import {
   createGame,
   updateGame,
   removeGame,
+  verifyPasswordUpdate,
 } from "../controllers/gameController.js";
 
 const indexRouter = Router();
@@ -16,6 +17,8 @@ const upload = multer({ dest: process.env.UPLOAD_DIR });
 indexRouter.get("/", getIndex);
 
 indexRouter.get("/game/:gameId", getGameDetails);
+
+indexRouter.post("/game/:gameId/verify", verifyPasswordUpdate);
 
 indexRouter.get("/create", createForm);
 
