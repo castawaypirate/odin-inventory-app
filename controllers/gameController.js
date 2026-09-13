@@ -94,7 +94,25 @@ export async function getIndex(req, res) {
   if (games.length === 0) {
     console.log("no games in the inventory, bruh");
   }
-  res.render("index", { games: games });
+  let confirmModal = false;
+  let action = "";
+  let method = "";
+  let modalErrors = null;
+  if (req.route.path === "/create") {
+    modalErrors = req.session.modalErrors;
+    req.session.modalErrors = null;
+    confirmModal = true;
+    action = "create/verify";
+    method = "POST";
+  }
+
+  res.render("index", {
+    games: games,
+    showConfirmModal: confirmModal,
+    action: action,
+    method: method,
+    modalErrors: modalErrors,
+  });
 }
 
 export const getGameDetails = [
@@ -156,7 +174,7 @@ export async function createForm(req, res) {
   const developers = await gameModel.getDevelopers();
   const gameEngines = await gameModel.getGameEngines();
   res.render("form", {
-    action: "/create",
+    action: "/game/create",
     platforms: platforms,
     genres: genres,
     publishers: publishers,
@@ -177,7 +195,7 @@ export const createGame = [
     if (!errors.isEmpty()) {
       return res.status(400).render("form", {
         errors: errors.array(),
-        action: "/create",
+        action: "/game/create",
         platforms: platforms,
         genres: genres,
         publishers: publishers,
@@ -208,6 +226,23 @@ const verifyPassword = function (req, res, next) {
   next();
 };
 
+export const verifyPasswordCreate = [
+  verifyPassword,
+  async (req, res) => {
+    if (!req.verified) {
+      return res.redirect("/create");
+      // return res.render("gameDetails", {
+      //   game: game,
+      //   showConfirmModal: true,
+      //   action: `/game/${game.id}/verify`,
+      //   method: "POST",
+      //   modalErrors: [{ msg: "Wrong password" }],
+      // });
+    }
+    res.redirect("/game/create");
+  },
+];
+
 export const verifyPasswordUpdate = [
   verifyPassword,
   validateParams,
@@ -237,7 +272,7 @@ export const verifyPasswordUpdate = [
       //   modalErrors: [{ msg: "Wrong password" }],
       // });
     }
-    res.redirect(`/update/${game.id}`);
+    res.redirect(`/game/update/${game.id}`);
   },
 ];
 
@@ -275,7 +310,7 @@ export const updateForm = [
     const developers = await gameModel.getDevelopers();
     const gameEngines = await gameModel.getGameEngines();
     res.render("form", {
-      action: `/update/${game.id}?_method=PUT`,
+      action: `/game/update/${game.id}?_method=PUT`,
       platforms: platforms,
       genres: genres,
       publishers: publishers,
@@ -299,7 +334,7 @@ export const updateGame = [
     if (!errors.isEmpty()) {
       return res.status(400).render("form", {
         errors: errors.array(),
-        action: `/update/${gameId}?_method=PUT`,
+        action: `/game/update/${gameId}?_method=PUT`,
         platforms: platforms,
         genres: genres,
         publishers: publishers,
