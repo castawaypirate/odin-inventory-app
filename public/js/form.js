@@ -21,10 +21,13 @@ $(document).ready(function () {
   });
 });
 
-document.querySelector(".remove").addEventListener("click", () => {
-  document.querySelector(".cover_message").remove();
-  const input = document.createElement("input");
-  input.type = "file";
-  input.name = "game_cover";
-  document.querySelector(".cover_input").appendChild(input);
-});
+const remove = document.querySelector(".remove");
+if (remove) {
+  remove.addEventListener("click", () => {
+    document.querySelector(".cover_message").remove();
+    const input = document.createElement("input");
+    input.type = "file";
+    input.name = "game_cover";
+    document.querySelector(".cover_input").appendChild(input);
+  });
+}

@@ -7,10 +7,12 @@
 import express from "express";
 import methodOverride from "method-override";
 import session from "express-session";
+import cron from "node-cron";
 import path from "path";
 import { fileURLToPath } from "url";
 import favicon from "serve-favicon";
 import indexRouter from "./routes/indexRoute.js";
+import { clean_up } from "./jobs/clean_up.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,4 +58,8 @@ app.listen(port, (error) => {
   }
   console.log(`Running on Node version: ${process.version}`);
   console.log(`App listening at port: ${port}`);
+});
+
+cron.schedule("* * * * *", async () => {
+  await clean_up(`${__dirname}/public/uploads/images/`);
 });
