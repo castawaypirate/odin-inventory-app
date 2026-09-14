@@ -30,6 +30,7 @@
 - research on how to do error handling to the different parts of the application or if there is a universal way to do it
 - universally handle urls that dont exist
 - admin mode for deleting updating all entities (optional)
+- update readme with the setup (what you installed and what configurations you had to make for this to work)
 
 * done
 - database schema

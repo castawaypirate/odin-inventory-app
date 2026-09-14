@@ -36,7 +36,7 @@ app.use(
       path: "/",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 600000,
+      maxAge: 6000000,
     },
   }),
 );

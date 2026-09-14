@@ -169,6 +169,9 @@ export const getGameDetails = [
 ];
 
 export async function createForm(req, res) {
+  // if (!req.session.isUnlocked) {
+  //   return res.redirect("/");
+  // }
   const genres = await gameModel.getGenres();
   const publishers = await gameModel.getPublishers();
   const developers = await gameModel.getDevelopers();
@@ -192,6 +195,8 @@ export const createGame = [
     const developers = await gameModel.getDevelopers();
     const gameEngines = await gameModel.getGameEngines();
     const errors = validationResult(req);
+
+    console.log(errors);
     if (!errors.isEmpty()) {
       return res.status(400).render("form", {
         errors: errors.array(),
@@ -219,9 +224,11 @@ export const createGame = [
 const verifyPassword = function (req, res, next) {
   if (req.body.password === process.env.SECRET) {
     req.verified = true;
+    req.session.isUnlocked = true;
   } else {
     req.session.modalErrors = [{ msg: "Wrong password" }];
     req.verified = false;
+    req.session.isUnlocked = false;
   }
   next();
 };
@@ -279,6 +286,9 @@ export const verifyPasswordUpdate = [
 export const updateForm = [
   validateParams,
   async (req, res) => {
+    if (!req.session.isUnlocked) {
+      return res.redirect("/");
+    }
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).render("form", {
