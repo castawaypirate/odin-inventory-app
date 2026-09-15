@@ -89,31 +89,63 @@ const validateGame = [
     .withMessage("Revenue must be a number"),
 ];
 
-export async function getIndex(req, res) {
-  const games = await gameModel.getGames();
-  if (games.length === 0) {
-    console.log("no games in the inventory, bruh");
-  }
-  let confirmModal = false;
-  let action = "";
-  let method = "";
-  let modalErrors = null;
-  if (req.route.path === "/create") {
-    modalErrors = req.session.modalErrors;
-    req.session.modalErrors = null;
-    confirmModal = true;
-    action = "create/verify";
-    method = "POST";
-  }
+const validateSearch = [query("search").trim().escape()];
 
-  res.render("index", {
-    games: games,
-    showConfirmModal: confirmModal,
-    action: action,
-    method: method,
-    modalErrors: modalErrors,
-  });
-}
+export const getIndex = [
+  validateSearch,
+  async (req, res) => {
+    let confirmModal = false;
+    let action = "";
+    let method = "";
+    let modalErrors = null;
+    if (req.route.path === "/create") {
+      modalErrors = req.session.modalErrors;
+      req.session.modalErrors = null;
+      confirmModal = true;
+      action = "create/verify";
+      method = "POST";
+    }
+
+    let games;
+    if (Object.keys(req.query).length > 0) {
+      games = await gameModel.getGamesByQuery(req.query);
+    } else {
+      games = await gameModel.getGames();
+    }
+
+    let searchQuery = req.query.search;
+    console.log(searchQuery);
+    // let games;
+    // if (!searchQuery || !searchQuery.trim()) {
+    //   games = await gameModel.getGames();
+    //   if (games.length === 0) {
+    //     console.log("no games in the inventory, bruh");
+    //   }
+    // } else {
+    //   games = await gameModel.getGamesByQuery(req.query);
+    // }
+
+    searchQuery = searchQuery ? searchQuery : "";
+
+    let genresQuery = req.query.genres;
+    const genres = await gameModel.getGenres();
+    genres.forEach((g) => {
+      if (genresQuery?.includes(g.name)) {
+        g.checked = true;
+      }
+    });
+
+    res.render("index", {
+      games: games,
+      showConfirmModal: confirmModal,
+      action: action,
+      method: method,
+      modalErrors: modalErrors,
+      searchQuery: searchQuery,
+      genres: genres,
+    });
+  },
+];
 
 export const getGameDetails = [
   validateParams,

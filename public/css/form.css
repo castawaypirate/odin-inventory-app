@@ -53,7 +53,7 @@ h1 {
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: 0.5px;
-  overflow-x: scroll;
+  overflow-x: auto;
   white-space: nowrap;
 }
 

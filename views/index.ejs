@@ -12,43 +12,70 @@
   <body>
     <div class="content">
       <%- include("partial/confirmModal")%>
-      <div style="margin: 1rem 0;">
-        <a href="/create">Create Game</a>
-      </div>
-      <div class="card-grid">
-        <% if (locals.games?.length > 0) { %> <% for(let game of games) { %>
-        <div class="card" data-id="<%=game.id%>">
-          <% if (game.image_path) {%>
-          <img src="<%=game.image_path%>" alt="<%=game.title%> cover" />
-          <% } else { %>
-          <img
-            src="/uploads/images/game cover placeholder.svg"
-            alt="an image of a gamepad serving as placeholder for games without uploaded cover"
-          />
-          <%}%>
-          <div class="card-details">
-            <h3><%=game.title%></h3>
-            <%if (game.publishers?.length !== 0) {%>
-            <div class="card-publishers">
-              <% for (let i=0;i<game.publishers.length;i++) { %>
-              <div class="publisher secondary"><%=game.publishers[i].name%></div>
-                <% if (i!==game.publishers.length-1) {%>
-              <div class="divider">|</div>
-              <%}%>
-              <%}%>
-            </div>
-            <% } else {%>
-            <div class="missing">TBA</div>
-            <%}%> <%if (game.release_date) {%>
-            <div class="secondary"><%=new Date(game.release_date).getFullYear()%></div>
-            <%} else {%>
-            <div class="missing">----</div>
-            <% } %>
+      <header>
+        <div class="header-left">
+          <h1><a href="/">Odin Game Inventory</a></h1> 
+          <div class="create">
+            <a href="/create">+ New</a>
           </div>
         </div>
-        <%}%> <%} else {%>
-        <h1>No games currently in the inventory</h1>
-        <% } %>
+          <form class="search-form" action="/search" method="GET">
+            <input value="<%=searchQuery%>" type="text" name="search" id="search" placeholder="Enter game title...">
+          </form>
+      </header>
+      <div class="main-layout">
+       <aside>
+          <div class="genres">
+            <h3 class="filter-title">
+              Genres
+            </h3>
+            <form class="side-form" action="/search" method="GET">
+              <% if (locals.genres?.length > 0) { %> 
+                <% for(let genre of genres) { %>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="<%=genre.id%>" name="genres" value="<%=genre.name%>" onchange="this.form.requestSubmit()" <%=(genre.checked) ? 'checked' : ''%>/>
+                  <label class="secondary" for="<%=genre.id%>"><%=genre.name%></label>
+                </div>
+                <%}%>
+              <%}%>
+            </form>
+          </div>
+       </aside> 
+        <div class="card-grid">
+          <% if (locals.games?.length > 0) { %> <% for(let game of games) { %>
+          <div class="card" data-id="<%=game.id%>">
+            <% if (game.image_path) {%>
+            <img src="<%=game.image_path%>" alt="<%=game.title%> cover" />
+            <% } else { %>
+            <img
+              src="/uploads/images/game cover placeholder.svg"
+              alt="an image of a gamepad serving as placeholder for games without uploaded cover"
+            />
+            <%}%>
+            <div class="card-details">
+              <h3><%=game.title%></h3>
+              <%if (game.publishers?.length !== 0) {%>
+              <div class="card-publishers">
+                <% for (let i=0;i<game.publishers.length;i++) { %>
+                <div class="publisher secondary"><%=game.publishers[i].name%></div>
+                  <% if (i!==game.publishers.length-1) {%>
+                <div class="divider">|</div>
+                <%}%>
+                <%}%>
+              </div>
+              <% } else {%>
+              <div class="missing">TBA</div>
+              <%}%> <%if (game.release_date) {%>
+              <div class="secondary"><%=new Date(game.release_date).getFullYear()%></div>
+              <%} else {%>
+              <div class="missing">----</div>
+              <% } %>
+            </div>
+          </div>
+          <%}%> <%} else {%>
+          <h1>No games found</h1>
+          <% } %>
+        </div>
       </div>
     </div>
   </body>

@@ -4,11 +4,11 @@ export async function getGames() {
   const { rows } = await pool.query("SELECT * FROM games");
   const games = [...rows];
   for (let game of games) {
-    const genres = await pool.query(
-      "SELECT name FROM genres JOIN games_genres ON genres.id = games_genres.genre_id WHERE game_id = $1",
-      [game.id],
-    );
-    game.genres = genres.rows;
+    // const genres = await pool.query(
+    //   "SELECT name FROM genres JOIN games_genres ON genres.id = games_genres.genre_id WHERE game_id = $1",
+    //   [game.id],
+    // );
+    // game.genres = genres.rows;
 
     const publishers = await pool.query(
       "SELECT name FROM publishers JOIN games_publishers ON publishers.id = games_publishers.publisher_id WHERE game_id = $1",
@@ -16,24 +16,58 @@ export async function getGames() {
     );
     game.publishers = publishers.rows;
 
-    const developers = await pool.query(
-      "SELECT name FROM developers JOIN games_developers ON developers.id = games_developers.developer_id WHERE game_id = $1",
-      [game.id],
-    );
-    game.developers = developers.rows;
-
-    const gameEngine = await pool.query(
-      "SELECT name FROM game_engines WHERE id = $1",
-      [game.game_engine_id],
-    );
-    game.gameEngine = gameEngine.rows[0];
-
-    const gameMetrics = await pool.query(
-      "SELECT * FROM game_metrics WHERE game_id = $1",
-      [game.id],
-    );
-    game.gameMetrics = gameMetrics.rows;
+    // const developers = await pool.query(
+    //   "SELECT name FROM developers JOIN games_developers ON developers.id = games_developers.developer_id WHERE game_id = $1",
+    //   [game.id],
+    // );
+    // game.developers = developers.rows;
+    //
+    // const gameEngine = await pool.query(
+    //   "SELECT name FROM game_engines WHERE id = $1",
+    //   [game.game_engine_id],
+    // );
+    // game.gameEngine = gameEngine.rows[0];
+    //
+    // const gameMetrics = await pool.query(
+    //   "SELECT * FROM game_metrics WHERE game_id = $1",
+    //   [game.id],
+    // );
+    // game.gameMetrics = gameMetrics.rows;
   }
+  return games;
+}
+
+export async function getGamesByQuery(query) {
+  // console.log("query: ", query);
+
+  let queryValues = [];
+  let queryText = "SELECT * FROM games WHERE";
+
+  if (query.search) {
+    queryValues.push(query.search.toLowerCase());
+    queryText += ` LOWER(title) LIKE '%' || $${queryValues.length} || '%'`;
+  }
+  if (query.genres) {
+    if (queryValues.length > 0) queryText += " AND";
+    if (!Array.isArray(query.genres)) {
+      queryValues.push([query.genres]);
+    } else {
+      queryValues.push(query.genres);
+    }
+    queryText += ` id IN (SELECT games_genres.game_id FROM genres JOIN games_genres ON genres.id = games_genres.genre_id WHERE genres.name = ANY($${queryValues.length}) GROUP BY games_genres.game_id HAVING COUNT(games_genres.game_id) = CARDINALITY($${queryValues.length}))`;
+  }
+
+  // console.log(queryText);
+  // console.log(queryValues);
+  const { rows: games } = await pool.query(queryText, [...queryValues]);
+  for (let game of games) {
+    const publishers = await pool.query(
+      "SELECT name FROM publishers JOIN games_publishers ON publishers.id = games_publishers.publisher_id WHERE game_id = $1",
+      [game.id],
+    );
+    game.publishers = publishers.rows;
+  }
+
   return games;
 }
 

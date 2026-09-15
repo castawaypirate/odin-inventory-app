@@ -1,10 +1,16 @@
 # what we will finish by the end of the day
-- script that may be a cron job and search in the home screen
+- side bar filters ~ 15/9/2026 ~
+- script that may be a cron job and search in the home screen ~ 14/9/2026 ~
 - delete game entry (with express-session) + update/create password confirmation for both navigating to the view ~ 13/9/2026 ~
 - delete game entry with password confirmation ~ 12/9/2026 ~
 - update and create forms + styles (almost - something with game_metrics isn't working properly) ~ 11/9/2026 ~
 
 # what we learned today
+- ~ 15/9/2026 ~:
+    
+- ~ 14/9/2026 ~:
+    - node-cron package can execute cron jobs from inside the nodejs project without needing to setup a os level cron job (it is recommended when you use platforms like render for the deployments - use os level cron jobs when you use platforms like digital ocean)
+    - GET forms overwrite each other so you need to handle this either by using one big form, either using input with hidden values passing them betweeen two separate forms or handling dynamically with client side js
 - ~ 13/9/2026 ~:
     - you have to install express-session, import it and set it up inside app.use(...) based on the documentation
     - to store a value you just do req.session.variable = value
@@ -30,6 +36,7 @@
 - search bar
 - side bar with genres, publisher, developer, platform 
 - cron job that deletes the files that are not in the database but they have been uploaded
+- change ids and fors in the form
 - research on how to do error handling to the different parts of the application or if there is a universal way to do it
 - universally handle urls that dont exist
 - update readme with the setup (what you installed and what configurations you had to make for this to work)

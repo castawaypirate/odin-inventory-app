@@ -19,6 +19,8 @@ indexRouter.get("/", getIndex);
 
 indexRouter.get("/create", getIndex);
 
+indexRouter.get("/search", getIndex);
+
 indexRouter.post("/create/verify", verifyPasswordCreate);
 
 indexRouter.get("/game/create", createForm);
