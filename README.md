@@ -128,6 +128,87 @@ PostgreSQL tables (created in `db/populate_db.js`):
 | Command | Description |
 |---------|-------------|
 | `npm run dev` | Start the server with nodemon and the `.env` file (port 8000) |
+| `npm start` | Start the server with Node (production, used by Render) |
+
+## 🚀 Deployment Architecture & Strategy
+
+This application is deployed using a split-stack architecture to ensure long-term stability and permanent data persistence on a free tier.
+
+### 1. The Hosting Stack
+
+- **Backend Server:** [Render](https://render.com/) (Web Service)
+- **Database:** [Neon.tech](https://neon.tech/) (Serverless PostgreSQL)
+
+Render offers excellent free hosting for Node.js/Express apps, but their free PostgreSQL databases are automatically deleted after 30 days. To prevent the portfolio data from expiring, the database is hosted externally on Neon.tech, which provides a permanent free tier. Both services are hosted in the **Frankfurt (EU Central)** region to minimize latency.
+
+### 2. Database Setup (Neon.tech)
+
+- Created a new serverless Postgres 18 project.
+- Generated a unique `DATABASE_URL` connection string.
+- Seeded the database using the custom SQL script in `db/populate_db.js` to populate the dictionary tables (engines, publishers, developers, genres), the `games` table, and the many-to-many junction tables.
+- Verified the data integrity using a master `STRING_AGG(DISTINCT ...)` join query.
+
+### 3. Codebase Preparation
+
+To transition from a local development environment to production, several key adjustments were made:
+
+- **Database Connection (`db/db_pool.js`):** Removed hardcoded local credentials and switched on `NODE_ENV` so the same codebase connects to Neon in production and the local Postgres in development:
+
+  ```javascript
+  let pool;
+  if (process.env.NODE_ENV === "production") {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
+  } else {
+    pool = new Pool({
+      host: process.env.HOST,
+      user: process.env.USER,
+      database: process.env.DATABASE,
+      password: process.env.PASSWORD,
+      port: process.env.DB_PORT,
+    });
+  }
+  ```
+
+- **Proxy Trust (`app.js`):** Because Render acts as a reverse proxy and terminates SSL/HTTPS before it reaches the Node app, Express was configured to trust the proxy. Without this, Express-Session refuses to set `secure: true` cookies.
+
+  ```javascript
+  app.set("trust proxy", 1);
+  ```
+
+- **Scripts (`package.json`):** Cleaned up JSON syntax and defined explicit build/start commands for the Render deployment engine.
+
+  ```json
+  "scripts": {
+    "dev": "nodemon --env-file=.env app.js",
+    "start": "node app.js"
+  }
+  ```
+
+### 4. Render Deployment Configuration
+
+The Express app was deployed as a Render Web Service with the following configurations:
+
+- **Build Command:** `npm install` (Installs all dependencies).
+- **Start Command:** `npm start` (Boots the Express server).
+- **Environment Variables:**
+  - `DATABASE_URL`: The Neon PostgreSQL connection string.
+  - `COOKIE_SECRET` / `SECRET`: Secure keys for session management.
+  - `UPLOAD_DIR`: Set to `public/uploads/images` to ensure Multer has a defined destination path.
+
+**`NODE_ENV` is not listed manually** because Render injects `NODE_ENV=production` automatically behind the scenes whenever a Node.js web service boots. This is what drives the `if/else` in `db_pool.js`: when Render runs `npm start`, the condition evaluates to `true` and the app connects to Neon; when you run `npm run dev` locally the variable is undefined, it evaluates to `false`, and the app safely connects to your local Postgres.
+
+### 5. Express 5 Async Error Handling
+
+Express 5 automatically forwards rejected promises and thrown errors from async route handlers to the centralized error middleware, so the controllers don't need try/catch blocks. The generic handler in `app.js` responds with `err.statusCode || 500` and the error message.
+
+### 6. Known Limitations (Ephemeral Storage)
+
+Render's free tier utilizes an ephemeral file system, meaning the server spins down after 15 minutes of inactivity and spins back up from a fresh GitHub clone upon the next request.
+
+- **Impact:** Any custom game covers uploaded by users via the `multer` middleware are deleted when the server sleeps.
+- **Resolution:** The default seeded games have their images hardcoded directly into the repository's `public/uploads` folder, ensuring the core portfolio layout remains perfectly intact across server restarts.
 
 ## Key Features
 
