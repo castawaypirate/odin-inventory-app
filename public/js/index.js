@@ -19,12 +19,12 @@ const searchForm = document.querySelector(".search-form");
 searchForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  // remove from URLSearchParams keys of formdata
   const formData = [...new FormData(searchForm)];
   let urlParams = "";
   if (window.location.search) {
     let params = new URLSearchParams(window.location.search);
     const paramsArray = [...params];
+
     paramsArray.forEach(([key, value], index, array) => {
       if (key !== "search") {
         if (index < array.length - 1) {
@@ -34,64 +34,70 @@ searchForm.addEventListener("submit", (event) => {
         }
       }
     });
+
+    if (urlParams.endsWith("&")) {
+      urlParams = urlParams.slice(0, -1);
+    }
   }
 
   let formParams = "";
   if (formData[0][1] !== "") {
     formParams = `${formData[0][0]}=${formData[0][1]}`;
   }
-  if (urlParams !== "" && formParams) {
+  if (urlParams !== "" && formParams !== "") {
     window.location.href = `${window.location.origin}/search?${urlParams}&${formParams}`;
-  } else if (urlParams && formParams === "") {
+  } else if (urlParams !== "" && formParams === "") {
     window.location.href = `${window.location.origin}/search?${urlParams}`;
   } else {
     window.location.href = `${window.location.origin}/search?${formParams}`;
   }
 });
 
-const sideForms = document.querySelectorAll(".side-form");
-for (let form of sideForms) {
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
+const sideForm = document.querySelector(".side-form");
+sideForm.addEventListener("submit", (event) => {
+  event.preventDefault();
 
-    const formArray = [...new FormData(form)];
+  const formArray = [...new FormData(sideForm)];
 
-    let urlParams = "";
-    if (window.location.search) {
-      let params = new URLSearchParams(window.location.search);
-      const paramsArray = [...params];
+  let excludeArr = [];
+  if (formArray.length === 0) {
+    excludeArr.push("genres");
+    excludeArr.push("publishers");
+    excludeArr.push("developers");
+  }
 
-      paramsArray.forEach(([key, value], index, array) => {
-        if (key !== formArray[0][0]) {
-          if (index < array.length - 1) {
-            urlParams += `${key}=${value}&`;
-          } else {
-            urlParams += `${key}=${value}`;
-          }
-        }
-      });
-    }
+  let urlParams = "";
+  if (window.location.search) {
+    let params = new URLSearchParams(window.location.search);
+    const paramsArray = [...params];
 
-    let formParams = "";
-    formArray.forEach(([key, value], index, array) => {
-      if (index < array.length - 1) {
-        formParams += `${key}=${value}&`;
-      } else {
-        formParams += `${key}=${value}`;
+    paramsArray.forEach(([key, value]) => {
+      if (key === "search") {
+        urlParams = `${key}=${value}`;
       }
     });
+  }
 
-    // console.log(urlParams);
-    // console.log(formParams);
-
-    if (urlParams !== "") {
-      // console.log(
-      //   `${window.location.origin}/search?${urlParams}&${formParams}`,
-      // );
-      window.location.href = `${window.location.origin}/search?${urlParams}&${formParams}`;
+  let formParams = "";
+  formArray.forEach(([key, value], index, array) => {
+    if (index < array.length - 1) {
+      formParams += `${key}=${value}&`;
     } else {
-      // console.log(`${window.location.origin}/search?${formParams}`);
-      window.location.href = `${window.location.origin}/search?${formParams}`;
+      formParams += `${key}=${value}`;
     }
   });
-}
+
+  let finalParams = "";
+  if (urlParams !== "") {
+    finalParams += urlParams;
+  }
+  if (formParams !== "") {
+    if (finalParams === "") {
+      finalParams += formParams;
+    } else {
+      finalParams += "&" + formParams;
+    }
+  }
+
+  window.location.href = `${window.location.origin}/search?${finalParams}`;
+});

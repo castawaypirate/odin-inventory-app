@@ -56,9 +56,25 @@ export async function getGamesByQuery(query) {
     }
     queryText += ` id IN (SELECT games_genres.game_id FROM genres JOIN games_genres ON genres.id = games_genres.genre_id WHERE genres.name = ANY($${queryValues.length}) GROUP BY games_genres.game_id HAVING COUNT(games_genres.game_id) = CARDINALITY($${queryValues.length}))`;
   }
+  if (query.publishers) {
+    if (queryValues.length > 0) queryText += " AND";
+    if (!Array.isArray(query.publishers)) {
+      queryValues.push([query.publishers]);
+    } else {
+      queryValues.push(query.publishers);
+    }
+    queryText += ` id IN (SELECT games_publishers.game_id FROM publishers JOIN games_publishers ON publishers.id = games_publishers.publisher_id WHERE publishers.name = ANY($${queryValues.length}) GROUP BY games_publishers.game_id HAVING COUNT(games_publishers.game_id) = CARDINALITY($${queryValues.length}))`;
+  }
+  if (query.developers) {
+    if (queryValues.length > 0) queryText += " AND";
+    if (!Array.isArray(query.developers)) {
+      queryValues.push([query.developers]);
+    } else {
+      queryValues.push(query.developers);
+    }
+    queryText += ` id IN (SELECT games_developers.game_id FROM developers JOIN games_developers ON developers.id = games_developers.developer_id WHERE developers.name = ANY($${queryValues.length}) GROUP BY games_developers.game_id HAVING COUNT(games_developers.game_id) = CARDINALITY($${queryValues.length}))`;
+  }
 
-  // console.log(queryText);
-  // console.log(queryValues);
   const { rows: games } = await pool.query(queryText, [...queryValues]);
   for (let game of games) {
     const publishers = await pool.query(

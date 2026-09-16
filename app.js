@@ -48,6 +48,10 @@ app.set("view engine", "ejs");
 
 app.use("/", indexRouter);
 
+app.all("/{*any}", function (req, res) {
+  res.send("where are going, bruh???", 404);
+});
+
 app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).send(err.message);
 });

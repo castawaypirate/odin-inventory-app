@@ -38,6 +38,10 @@ indexRouter.put(
 indexRouter.get("/game/:gameId", getGameDetails);
 
 indexRouter.get("/game/:gameId/:action", getGameDetails);
+// the right thing to do though is this so you dont have
+// random 3 part urls actually getting into the gameDetailes
+// indexRouter.get("/game/:gameId/update", getGameDetails);
+// indexRouter.get("/game/:gameId/delete", getGameDetails);
 
 indexRouter.post("/game/:gameId/verify", verifyPasswordUpdate);
 

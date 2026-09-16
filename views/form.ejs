@@ -40,6 +40,7 @@
         <div class="form-group">
           <label for="title">Title</label>
           <input
+            id="title"
             type="text"
             name="title"
             value="<%=locals.game === undefined ? '' : game.title %>"
@@ -49,7 +50,7 @@
         <div class="form-group">
           <label for="description">Description</label>
           <!-- prettier-ignore -->
-          <textarea name="description" rows="5"><%= locals.game===undefined ? '' : game.description %></textarea>
+          <textarea id="description" name="description" rows="5"><%= locals.game===undefined ? '' : game.description %></textarea>
         </div>
 
         <div class="form-group">
@@ -57,9 +58,9 @@
           <div class="platforms">
             <% for (const platform of platforms) { %>
             <div>
-              <label for="platforms"> <%= platform%> </label>
+              <label for="<%=platform%>"> <%= platform%> </label>
               <!-- prettier-ignore -->
-              <input type="checkbox" name="platforms" value="<%= platform%>" <%= (locals.game && locals.game.platforms !== undefined && game.platforms.includes(platform)) ? 'checked' : ''%>/>
+              <input id="<%=platform%>" type="checkbox" name="platforms" value="<%= platform%>" <%= (locals.game && locals.game.platforms !== undefined && game.platforms.includes(platform)) ? 'checked' : ''%>/>
             </div>
             <%}%>
           </div>
@@ -68,6 +69,7 @@
         <div class="form-group">
           <label for="release_date">Release date</label>
           <input
+            id="release_date" 
             type="date"
             name="release_date"
             value="<%=locals.game?.release_date ? format(new Date(game['release_date']), 'yyyy-MM-dd') : '' %>"
@@ -78,10 +80,10 @@
           <label for="game_cover">Cover</label>
             <% if (locals.game?.image_path) { %>
               <div class="cover_message">A game cover has already been uploaded. If you want remove it press <span class="remove">here</span>!
-              <input style="display: none;" type="text" name="game_cover" value="filled">
+              <input id="game_cover" style="display: none;" type="text" name="game_cover" value="filled">
               </div>
             <%} else {%>
-              <input type="file" name="game_cover">
+              <input id="game_cover" type="file" name="game_cover">
             <%}%>
         </div>
 
@@ -207,6 +209,7 @@
         <div class="form-group">
           <label for="copies_sold">Copies sold</label>
           <input
+            id="copies_sold"
             type="text"
             name="copies_sold"
             value="<%=locals.game === undefined ? '' : game.copies_sold %>"
@@ -216,6 +219,7 @@
         <div class="form-group">
           <label for="budget">Budget</label>
           <input
+            id="budget"
             type="text"
             name="budget"
             value="<%=locals.game === undefined ? '' : game.budget %>"
@@ -225,6 +229,7 @@
         <div class="form-group">
           <label for="revenue">Reveue</label>
           <input
+            id="revenue"
             type="text"
             name="revenue"
             value="<%=locals.game === undefined ? '' : game.revenue %>"

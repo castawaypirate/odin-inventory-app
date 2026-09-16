@@ -191,6 +191,12 @@ a {
   gap: 1rem;
 }
 
+.side-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .checkbox-group > input:hover {
   cursor: pointer;
 }
@@ -212,6 +218,7 @@ a {
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
   overflow: hidden;
+  height: fit-content;
 }
 
 .card img {

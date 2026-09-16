@@ -114,16 +114,6 @@ export const getIndex = [
     }
 
     let searchQuery = req.query.search;
-    console.log(searchQuery);
-    // let games;
-    // if (!searchQuery || !searchQuery.trim()) {
-    //   games = await gameModel.getGames();
-    //   if (games.length === 0) {
-    //     console.log("no games in the inventory, bruh");
-    //   }
-    // } else {
-    //   games = await gameModel.getGamesByQuery(req.query);
-    // }
 
     searchQuery = searchQuery ? searchQuery : "";
 
@@ -135,6 +125,22 @@ export const getIndex = [
       }
     });
 
+    let publishersQuery = req.query.publishers;
+    const publishers = await gameModel.getPublishers();
+    publishers.forEach((p) => {
+      if (publishersQuery?.includes(p.name)) {
+        p.checked = true;
+      }
+    });
+
+    let developersQuery = req.query.developers;
+    const developers = await gameModel.getDevelopers();
+    developers.forEach((p) => {
+      if (developersQuery?.includes(p.name)) {
+        p.checked = true;
+      }
+    });
+
     res.render("index", {
       games: games,
       showConfirmModal: confirmModal,
@@ -143,6 +149,8 @@ export const getIndex = [
       modalErrors: modalErrors,
       searchQuery: searchQuery,
       genres: genres,
+      publishers: publishers,
+      developers: developers,
     });
   },
 ];
@@ -179,14 +187,16 @@ export const getGameDetails = [
       confirmModal = true;
       action = `/game/${game.id}/verify`;
       method = "POST";
-    }
-
-    if (req.params.action === "delete") {
+    } else if (req.params.action === "delete") {
       modalErrors = req.session.modalErrors;
       req.session.modalErrors = null;
       confirmModal = true;
       action = `/game/${game.id}?_method=DELETE`;
       method = "POST";
+    } else {
+      return res.status(404).render("gameDetails", {
+        error: 404,
+      });
     }
 
     game.gameMetrics = game.gameMetrics[0];

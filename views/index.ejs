@@ -25,11 +25,11 @@
       </header>
       <div class="main-layout">
        <aside>
+        <form class="side-form" action="/search" method="GET">
           <div class="genres">
             <h3 class="filter-title">
               Genres
             </h3>
-            <form class="side-form" action="/search" method="GET">
               <% if (locals.genres?.length > 0) { %> 
                 <% for(let genre of genres) { %>
                 <div class="checkbox-group">
@@ -38,8 +38,34 @@
                 </div>
                 <%}%>
               <%}%>
-            </form>
           </div>
+          <div class="publishers">
+            <h3 class="filter-title">
+              Publishers
+            </h3>
+              <% if (locals.publishers?.length > 0) { %> 
+                <% for(let publisher of publishers) { %>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="<%=publisher.id%>" name="publishers" value="<%=publisher.name%>" onchange="this.form.requestSubmit()" <%=(publisher.checked) ? 'checked' : ''%>/>
+                  <label class="secondary" for="<%=publisher.id%>"><%=publisher.name%></label>
+                </div>
+                <%}%>
+              <%}%>
+          </div>
+          <div class="developers">
+            <h3 class="filter-title">
+              Developers
+            </h3>
+              <% if (locals.developers?.length > 0) { %> 
+                <% for(let developer of developers) { %>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="<%=developer.id%>" name="developers" value="<%=developer.name%>" onchange="this.form.requestSubmit()" <%=(developer.checked) ? 'checked' : ''%>/>
+                  <label class="secondary" for="<%=developer.id%>"><%=developer.name%></label>
+                </div>
+                <%}%>
+              <%}%>
+          </div>
+        </form>
        </aside> 
         <div class="card-grid">
           <% if (locals.games?.length > 0) { %> <% for(let game of games) { %>
