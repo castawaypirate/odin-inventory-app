@@ -58,9 +58,10 @@
           <div class="platforms">
             <% for (const platform of platforms) { %>
             <div>
-              <label for="<%=platform%>"> <%= platform%> </label>
+              <% const platformId = platform.replace(/\s+/g, '-').toLowerCase(); %>
+              <label for="<%=platformId%>"> <%= platform%> </label>
               <!-- prettier-ignore -->
-              <input id="<%=platform%>" type="checkbox" name="platforms" value="<%= platform%>" <%= (locals.game && locals.game.platforms !== undefined && game.platforms.includes(platform)) ? 'checked' : ''%>/>
+              <input id="<%=platformId%>" type="checkbox" name="platforms" value="<%= platform%>" <%= (locals.game && locals.game.platforms !== undefined && game.platforms.includes(platform)) ? 'checked' : ''%>/>
             </div>
             <%}%>
           </div>
@@ -227,7 +228,7 @@
         </div>
 
         <div class="form-group">
-          <label for="revenue">Reveue</label>
+          <label for="revenue">Revenue</label>
           <input
             id="revenue"
             type="text"

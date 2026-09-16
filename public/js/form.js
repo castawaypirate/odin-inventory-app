@@ -31,3 +31,17 @@ if (remove) {
     document.querySelector(".cover_input").appendChild(input);
   });
 }
+
+const select2Selectors = ["genres", "publishers", "developers", "game_engine"];
+select2Selectors.forEach((sel) => {
+  const label = document.querySelector(`label[for="${sel}"]`);
+  if (label) {
+    label.addEventListener("click", (event) => {
+      event.preventDefault();
+      const $select = $(`#${sel}`);
+      if ($select.hasClass("select2-hidden-accessible")) {
+        $select.select2("open");
+      }
+    });
+  }
+});

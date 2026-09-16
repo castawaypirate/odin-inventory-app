@@ -52,6 +52,15 @@ app.all("/{*any}", function (req, res) {
   res.send("where are going, bruh???", 404);
 });
 
+// the right thing to do is this
+// to handle unknown routes
+// app.use((req, res, next) => {
+//   res.status(404).render("404", {
+//     error: 404,
+//     message: "Page not found"
+//   });
+// });
+
 app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).send(err.message);
 });

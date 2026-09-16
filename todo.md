@@ -39,7 +39,6 @@
 
 # backlog
 - research on how to do error handling to the different parts of the application or if there is a universal way to do it
-- universally handle urls that dont exist
 - update readme with the setup (what you installed and what configurations you had to make for this to work)
 - admin mode for deleting updating all entities (optional)
 
@@ -59,3 +58,4 @@
 - side bar with genres, publisher, developer, (platform)
 - cron job that deletes the files that are not in the database but they have been uploaded
 - change ids and fors in the form
+- universally handle urls that dont exist

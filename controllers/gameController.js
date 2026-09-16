@@ -193,9 +193,10 @@ export const getGameDetails = [
       confirmModal = true;
       action = `/game/${game.id}?_method=DELETE`;
       method = "POST";
+    } else if (req.params.action === undefined) {
     } else {
-      return res.status(404).render("gameDetails", {
-        error: 404,
+      return res.status(400).render("gameDetails", {
+        error: 400,
       });
     }
 
